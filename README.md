@@ -8,7 +8,7 @@ Codex, GitHub Copilot, Gemini CLI and other agents that read skills.
 | Skill | What it does | Try |
 | --- | --- | --- |
 | [App Wireframe](docs/app-wireframe.md) | Turns any app into editable lo-fi wireframes: name an app to pull its screens from Mobbin, or bring your own screenshots. [See 20 example boards](https://whimsical.com/templates/wireframes). | `Make wireframes of Airbnb` |
-| [Renewal Timeline](docs/renewal-timeline.md) | Turns a customer's renewal emails into a timeline of every offer and counter-offer, with a pricing table, and writes the renewal summary: terms, NRR, usage, open items. | `Build the renewal timeline for Initech` |
+| [Renewal Timeline](docs/renewal-timeline.md) | Turns the emails behind a customer or contract renewal into a timeline of every offer and counter-offer, with a pricing table, and writes the renewal summary: terms, NRR, usage, open items. | `Build the renewal timeline for Initech` |
 
 These skills are new, and mostly written with coding agents. If something breaks in your
 setup, please [open an issue](https://github.com/WhimsicalCode/skills/issues/new/choose).
