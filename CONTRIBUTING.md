@@ -45,11 +45,14 @@ If you have Claude Code, also run `claude plugin validate .`.
    `mcpServers` it needs. Copy an existing entry.
 3. Write its guide in `docs/<name>.md`: what it does, an example prompt and result, what
    it needs, how to install it in each agent, how to use it, privacy. Copy an existing
-   guide's structure.
-4. Add its tests in `tests/<name>/`.
-5. Add a row to the skill table in `README.md`, and its owners to `.github/CODEOWNERS`.
+   guide's structure. Its intro, before the first `##`, is also its summary on
+   whimsical.com (see [CONVENTIONS.md](CONVENTIONS.md#on-whimsicalcom)).
+4. Make its cover in `docs/covers/`, following
+   [docs/covers/README.md](docs/covers/README.md).
+5. Add its tests in `tests/<name>/`.
+6. Add a row to the skill table in `README.md`, and its owners to `.github/CODEOWNERS`.
 
-`tests/repo/` fails until steps 1 to 5 are done, and lists what's missing.
+`tests/repo/` fails until steps 1 to 6 are done, and lists what's missing.
 
 ## Releasing
 
@@ -63,3 +66,6 @@ git tag v2026.11.06 && git push origin v2026.11.06
 
 Add a suffix for a second release on the same day, like `v2026.11.06.2`. Users of the
 Claude Code marketplace get updates from `main` without a release.
+
+A release also rebuilds [whimsical.com/skills](https://whimsical.com/skills), which shows
+the skills as they are in the latest release.

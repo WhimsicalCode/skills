@@ -59,6 +59,24 @@ as many agents as possible. `tests/repo/` checks the ones marked *(tested)*.
 - Examples, tests and issues use fictional companies and people, such as Acme, Globex and
   Initech, never real customer data.
 
+## On whimsical.com
+
+[whimsical.com/skills](https://whimsical.com/skills) lists every skill in the latest
+release, built from this repository. Each skill's page shows:
+
+- Its title, the guide's `# Title` line, which is the guide's first line *(tested)*.
+- Its card description, the `description` in its `marketplace.json` entry.
+- A summary, the guide's intro: everything before its first `##` heading. The intro starts
+  with one paragraph saying what the skill does, then a ```` ```text ```` block with an
+  example prompt *(tested)*, then whatever shows the result. Images and links in the intro
+  can be relative; the site points them at GitHub.
+- Its cover, `docs/covers/<name>.png`, made from `docs/covers/<name>.json` and
+  `docs/covers/art/<name>.svg` *(tested)*.
+  [docs/covers/README.md](docs/covers/README.md) explains how to make one.
+- The MCP servers it connects to, from its `marketplace.json` entry.
+
+The page's URL is `whimsical.com/skills/<name>`, so renaming a skill breaks its link.
+
 ## Versions
 
 - Each skill's version is in its `.claude-plugin/marketplace.json` entry. Bump it in the

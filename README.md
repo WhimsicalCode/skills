@@ -71,10 +71,11 @@ following your agent's MCP setup guide.
 ```text
 skills/<name>/                    each skill: SKILL.md, references/, scripts/
 docs/<name>.md                    each skill's guide: what it does, install, use, privacy
+docs/covers/                      each skill's cover for whimsical.com, and how to make one
 tests/<name>/                     each skill's tests, outside the skill so they stay out of its zip
 tests/repo/                       checks every skill against the conventions
 .claude-plugin/marketplace.json   the Claude Code catalog: each skill's version and MCP servers
-.github/workflows/                tests on every change; a release zip of every skill per tag
+.github/workflows/                tests on every change; per tag, a release zip of every skill and a website rebuild
 ```
 
 [CONTRIBUTING.md](CONTRIBUTING.md) explains how to change or add a skill, and
@@ -88,4 +89,5 @@ access and how to report a problem.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE), except the fonts in `docs/covers/fonts/`, which are under the
+[SIL Open Font License](docs/covers/fonts/OFL-Monsical.txt).

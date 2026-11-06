@@ -1,0 +1,62 @@
+<svg viewBox="0 0 720 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Inputs: two email cards, like the boards card, and a CRM record below. -->
+  <rect x="40" y="56" width="220" height="118" rx="12" fill="#dcd8ff" stroke="#b8b0ff" stroke-width="2"/>
+  <circle cx="64" cy="80" r="9" fill="#958bff"/>
+  <rect x="80" y="76" width="70" height="8" rx="4" fill="#b8b0ff"/>
+  <rect x="56" y="104" width="170" height="8" rx="4" fill="#b8b0ff"/>
+  <rect x="56" y="120" width="130" height="8" rx="4" fill="#b8b0ff"/>
+
+  <rect x="70" y="104" width="220" height="118" rx="12" fill="#958bff" stroke="#6658ff" stroke-width="2"/>
+  <circle cx="94" cy="128" r="9" fill="#fbfafc"/>
+  <rect x="110" y="124" width="70" height="8" rx="4" fill="#dcd8ff"/>
+  <rect x="86" y="152" width="170" height="8" rx="4" fill="#fbfafc"/>
+  <rect x="86" y="168" width="150" height="8" rx="4" fill="#fbfafc"/>
+  <rect x="86" y="184" width="110" height="8" rx="4" fill="#fbfafc"/>
+
+  <rect x="40" y="262" width="250" height="168" rx="12" fill="#fbfafc" stroke="#e1dce5" stroke-width="2"/>
+  <path d="M41 302V275C41 267.82 46.82 263 54 263H276C283.18 263 289 267.82 289 275V302Z" fill="#8bbbff"/>
+  <path d="M40 302H290" stroke="#5a9eff" stroke-width="2"/>
+  <rect x="56" y="278" width="80" height="9" rx="4.5" fill="#fbfafc"/>
+  <g fill="#e1dce5">
+    <rect x="56" y="320" width="64" height="8" rx="4"/><rect x="140" y="320" width="40" height="8" rx="4"/><rect x="200" y="320" width="70" height="8" rx="4"/>
+    <rect x="56" y="356" width="80" height="8" rx="4"/><rect x="140" y="356" width="40" height="8" rx="4"/><rect x="200" y="356" width="56" height="8" rx="4"/>
+    <rect x="56" y="392" width="56" height="8" rx="4"/><rect x="140" y="392" width="40" height="8" rx="4"/><rect x="200" y="392" width="64" height="8" rx="4"/>
+  </g>
+  <path d="M40 342H290M40 378H290" stroke="#eae6ed" stroke-width="2"/>
+
+  <!-- The arrow. -->
+  <path d="M316 260H372" stroke="#b8b0bc" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M372 254L381 260L372 266Z" fill="#b8b0bc"/>
+
+  <!-- Output: a timeline, your side in blue on the left, theirs in purple on the right,
+       ending with the agreed deal as the solid card. -->
+  <path d="M544 40V480" stroke="#c9c1cd" stroke-width="2"/>
+  <g stroke="#c9c1cd" stroke-width="2">
+    <path d="M524 92H544"/><path d="M544 182H564"/><path d="M524 272H544"/><path d="M544 382H564"/>
+  </g>
+
+  <rect x="404" y="62" width="120" height="60" rx="10" fill="#8bbbff" stroke="#5a9eff" stroke-width="2"/>
+  <rect x="418" y="78" width="72" height="8" rx="4" fill="#fbfafc"/>
+  <rect x="418" y="96" width="50" height="8" rx="4" fill="#d6e7ff"/>
+
+  <rect x="564" y="152" width="120" height="60" rx="10" fill="#efd9ff" stroke="#cf8bff" stroke-width="2"/>
+  <rect x="578" y="168" width="72" height="8" rx="4" fill="#cf8bff"/>
+  <rect x="578" y="186" width="50" height="8" rx="4" fill="#dfb2ff"/>
+
+  <rect x="404" y="242" width="120" height="60" rx="10" fill="#8bbbff" stroke="#5a9eff" stroke-width="2"/>
+  <rect x="418" y="258" width="80" height="8" rx="4" fill="#fbfafc"/>
+  <rect x="418" y="276" width="44" height="8" rx="4" fill="#d6e7ff"/>
+
+  <rect x="564" y="342" width="120" height="80" rx="10" fill="#9e39e5" stroke="#731bb2" stroke-width="2"/>
+  <rect x="578" y="360" width="80" height="8" rx="4" fill="#fbfafc"/>
+  <rect x="578" y="378" width="56" height="8" rx="4" fill="#dfb2ff"/>
+  <rect x="578" y="396" width="64" height="8" rx="4" fill="#dfb2ff"/>
+
+  <!-- Date pills on the line. -->
+  <g fill="#f0eef2" stroke="#c9c1cd" stroke-width="2">
+    <rect x="526" y="84" width="36" height="16" rx="8"/>
+    <rect x="526" y="174" width="36" height="16" rx="8"/>
+    <rect x="526" y="264" width="36" height="16" rx="8"/>
+    <rect x="526" y="374" width="36" height="16" rx="8"/>
+  </g>
+</svg>

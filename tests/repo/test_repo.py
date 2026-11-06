@@ -4,6 +4,7 @@ They run over every folder in skills/, so a new skill is covered without new tes
 import ast
 import json
 import re
+import struct
 import subprocess
 import sys
 from pathlib import Path
@@ -14,6 +15,8 @@ ROOT = Path(__file__).resolve().parents[2]
 SKILLS = sorted(p for p in (ROOT / "skills").iterdir() if p.is_dir())
 MARKETPLACE = json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_text())
 FRONTMATTER_KEYS = {"name", "description", "license", "metadata", "allowed-tools"}
+COVERS = ROOT / "docs" / "covers"
+COVER_KEYS = {"category", "headline", "subtitle", "prompt"}
 # Distribution names whose import name differs.
 IMPORT_NAMES = {"pillow": "PIL"}
 
@@ -90,6 +93,43 @@ def test_has_guide_tests_and_gallery_row(skill):
     assert (ROOT / "docs" / f"{skill.name}.md").is_file(), f"add docs/{skill.name}.md"
     assert any((ROOT / "tests" / skill.name).glob("test_*.py")), f"add tests in tests/{skill.name}/"
     assert f"(docs/{skill.name}.md)" in (ROOT / "README.md").read_text(), "add a row to the README's skill table"
+
+
+@pytest.mark.parametrize("skill", SKILLS, ids=lambda p: p.name)
+def test_guide_intro_is_what_the_website_shows(skill):
+    # whimsical.com/skills reads the title and the intro, up to the first "##". See CONVENTIONS.md.
+    guide = (ROOT / "docs" / f"{skill.name}.md").read_text()
+    assert re.match(r"# \S.*\n\n", guide), "the guide starts with a '# Title' line, then a blank line"
+    intro = guide.split("\n## ", 1)[0].split("\n", 1)[1].strip()
+    first = intro.split("\n\n", 1)[0]
+    assert not first.startswith(("```", "!", "[!", "|", "-")), "the intro opens with a paragraph of prose"
+    assert re.search(r"^```text\n.+?\n```$", intro, re.S | re.M), "the intro has a ```text block with a prompt"
+
+
+@pytest.mark.parametrize("skill", SKILLS, ids=lambda p: p.name)
+def test_has_cover(skill):
+    spec_path = COVERS / f"{skill.name}.json"
+    assert spec_path.is_file(), f"add docs/covers/{skill.name}.json; see docs/covers/README.md"
+    spec = json.loads(spec_path.read_text())
+    assert set(spec) == COVER_KEYS, f"the cover spec has exactly {sorted(COVER_KEYS)}"
+    assert all(isinstance(v, str) and v.strip() for v in spec.values())
+    assert len(spec["headline"].split("\n")) <= 2, "the headline fits on two lines"
+
+    art = COVERS / "art" / f"{skill.name}.svg"
+    assert art.is_file(), f"draw docs/covers/art/{skill.name}.svg; see docs/covers/README.md"
+    assert 'viewBox="0 0 720 520"' in art.read_text(), "the illustration's viewBox is 0 0 720 520"
+
+    png = COVERS / f"{skill.name}.png"
+    assert png.is_file(), f"render it: uv run docs/covers/render.py {skill.name}"
+    header = png.read_bytes()[:24]
+    assert header[:8] == b"\x89PNG\r\n\x1a\n" and struct.unpack(">II", header[16:24]) == (3200, 2000), \
+        "the cover is rendered by docs/covers/render.py at 3200x2000"
+
+
+def test_covers_only_for_skills_that_exist():
+    names = {s.name for s in SKILLS}
+    for path in [*COVERS.glob("*.json"), *COVERS.glob("*.png"), *(COVERS / "art").glob("*.svg")]:
+        assert path.stem in names, f"{path.relative_to(ROOT)} belongs to no skill"
 
 
 @pytest.mark.parametrize("skill", SKILLS, ids=lambda p: p.name)
