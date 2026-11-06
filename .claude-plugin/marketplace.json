@@ -8,8 +8,30 @@
   "plugins": [
     {
       "name": "app-wireframe",
-      "source": "./plugins/app-wireframe",
-      "description": "Turn any app into editable Whimsical wireframes: name an app to pull its screens from Mobbin, or bring your own screenshots."
+      "version": "1.1.0",
+      "description": "Turn any app into editable Whimsical wireframes: name an app to pull its screens from Mobbin, or bring your own screenshots.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/app-wireframe"],
+      "mcpServers": {
+        "whimsical": {
+          "type": "http",
+          "url": "https://mcp.whimsical.com/mcp"
+        },
+        "mobbin": {
+          "type": "http",
+          "url": "https://api.mobbin.com/mcp"
+        }
+      },
+      "author": {
+        "name": "Whimsical",
+        "url": "https://whimsical.com"
+      },
+      "homepage": "https://github.com/WhimsicalCode/skills/blob/main/docs/app-wireframe.md",
+      "repository": "https://github.com/WhimsicalCode/skills",
+      "license": "MIT",
+      "keywords": ["wireframes", "whimsical", "mobbin", "ui", "design", "mcp"],
+      "category": "design"
     }
   ]
 }

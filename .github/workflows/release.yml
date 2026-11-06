@@ -1,0 +1,29 @@
+name: release
+
+# Push a tag like v2026.11.06 to publish a release with a ready-to-upload zip of every skill.
+# Each zip keeps a stable link: releases/latest/download/<name>.zip
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build skill zips
+        run: |
+          mkdir -p dist
+          cd skills
+          for skill in */; do
+            zip -r "../dist/${skill%/}.zip" "${skill%/}" -x "*/__pycache__/*" "*.DS_Store"
+          done
+          cd ..
+          ls -l dist
+      - uses: softprops/action-gh-release@v3
+        with:
+          files: dist/*.zip
+          generate_release_notes: true

@@ -89,8 +89,8 @@ The apps belong to their makers. Whimsical isn't affiliated with any of them.
 ## Requirements
 
 - An agent that supports skills, remote MCP servers and images, such as
-  [Claude Code](https://claude.com/claude-code). Results depend a lot on the model:
-  use the strongest vision model you have.
+  [Claude Code](https://claude.com/claude-code), Codex or Cursor. Results depend a lot
+  on the model: use the strongest vision model you have.
 - [uv](https://docs.astral.sh/uv/). It runs the skill's Python scripts and installs
   their dependencies the first time.
 - A [Whimsical](https://whimsical.com) account, connected through the
@@ -105,6 +105,9 @@ The apps belong to their makers. Whimsical isn't affiliated with any of them.
 
 ## Install
 
+The skill needs two MCP servers: Whimsical, `https://mcp.whimsical.com/mcp`, and
+Mobbin, `https://api.mobbin.com/mcp` (skip Mobbin if you only use your own screenshots).
+
 ### Claude Code
 
 ```text
@@ -116,11 +119,34 @@ The plugin adds the skill and both MCP servers. Restart Claude Code, run `/mcp`,
 sign in to Whimsical and Mobbin. If you already had either server configured, you'll
 see it twice; disable one in `/mcp`.
 
-### Other agents
+### Claude apps (claude.ai and the desktop app)
 
-Copy [`skills/app-wireframe/`](skills/app-wireframe) into the folder your agent loads
-skills from. Then add the two MCP servers, `https://mcp.whimsical.com/mcp` and
-`https://api.mobbin.com/mcp`, using the setup guides from
+Not tested there yet. The skill runs its Python scripts with uv and downloads screens
+from Mobbin's servers, and Claude's sandbox may not allow either. If you try it, start
+with your own screenshots, and please
+[tell us how it went](https://github.com/WhimsicalCode/skills/issues).
+
+1. Download
+   [`app-wireframe.zip`](https://github.com/WhimsicalCode/skills/releases/latest/download/app-wireframe.zip).
+2. In Claude, open **Customize** (on claude.ai, [claude.ai/customize/skills](https://claude.ai/customize/skills)),
+   click **Add**, then **Upload skill**, drop the zip and click **Upload**.
+3. Still in **Customize**, under **Connectors**, add Whimsical, and Mobbin if you have a
+   Mobbin plan.
+
+### Cursor, Codex, GitHub Copilot, Gemini CLI and other agents
+
+With [Node.js](https://nodejs.org) installed, run this in a terminal and pick your agent
+when asked:
+
+```sh
+npx skills add WhimsicalCode/skills --skill app-wireframe
+```
+
+It copies the skill where your agent looks for skills, using the open
+[skills](https://github.com/vercel-labs/skills) installer. Without Node.js, unzip
+[`app-wireframe.zip`](https://github.com/WhimsicalCode/skills/releases/latest/download/app-wireframe.zip)
+into that folder yourself. Either way, then add the two MCP servers following your
+agent's MCP guide, or the guides from
 [Whimsical](https://whimsical.com/learn/integrations/mcp) and
 [Mobbin](https://docs.mobbin.com/mcp/clients/overview).
 
@@ -176,9 +202,9 @@ its wireframe at the same size, and moves its Mobbin link underneath.
    line, and reports how each screen went.
 
 The design rules live in
-[`references/design.md`](skills/app-wireframe/references/design.md), and the layout
+[`references/design.md`](../skills/app-wireframe/references/design.md), and the layout
 techniques that render well in Whimsical in
-[`references/techniques.md`](skills/app-wireframe/references/techniques.md).
+[`references/techniques.md`](../skills/app-wireframe/references/techniques.md).
 
 `wireframes.py` and `arrange.py` work offline: the agent calls Whimsical and Mobbin
 and hands the results to the scripts. `mobbin_download.py` only fetches the image
@@ -205,9 +231,6 @@ under their own privacy policies:
 
 ## Development
 
-This plugin lives in `plugins/app-wireframe/` of the
-[Whimsical skills](https://github.com/WhimsicalCode/skills) repository.
-
 ```text
 skills/app-wireframe/
   SKILL.md                 the workflow the agent follows
@@ -218,19 +241,18 @@ skills/app-wireframe/
     mobbin_download.py     downloads and crops the Mobbin screens of a shortlist
     mobbin_link.py         reads a pasted Mobbin link: app, screen tags, search query
     icon_index.json        icon names, aliases and descriptions for the icon search
-tests/                     tests for the scripts
-.claude-plugin/            Claude Code plugin manifest
-.mcp.json                  the Whimsical and Mobbin MCP servers
+tests/app-wireframe/       tests for the scripts
 ```
 
-From `plugins/app-wireframe/`:
+Its Claude Code plugin entry, with both MCP servers, is in the repository's
+[`marketplace.json`](../.claude-plugin/marketplace.json). From the repository root:
 
 ```sh
-uv run --group dev pytest
-uv run --group dev ruff check .
-claude plugin validate .
+uv run --group dev pytest tests/app-wireframe
 ```
+
+[CONTRIBUTING.md](../CONTRIBUTING.md) covers the rest.
 
 ## License
 
-[MIT](../../LICENSE)
+[MIT](../LICENSE)

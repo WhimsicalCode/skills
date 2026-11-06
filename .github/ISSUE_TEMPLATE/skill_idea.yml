@@ -1,0 +1,16 @@
+name: Skill idea
+description: Suggest a new skill, or something an existing skill should do.
+labels: [idea]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What should the agent do for you?
+      description: The task, what you'd type, and what the Whimsical board should look like at the end.
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Where does the information come from?
+      description: Files, other apps or MCP servers the skill would read from.

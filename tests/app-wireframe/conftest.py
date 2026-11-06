@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from PIL import Image
 
-SCRIPTS = Path(__file__).resolve().parents[1] / "skills" / "app-wireframe" / "scripts"
+SCRIPTS = Path(__file__).resolve().parents[2] / "skills" / "app-wireframe" / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
 

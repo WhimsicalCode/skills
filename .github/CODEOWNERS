@@ -1,0 +1,5 @@
+# Who reviews changes to each part of the repository. Add each new skill's owners here.
+*                        @david-whimsical
+/skills/app-wireframe/   @david-whimsical
+/docs/app-wireframe.md   @david-whimsical
+/tests/app-wireframe/    @david-whimsical

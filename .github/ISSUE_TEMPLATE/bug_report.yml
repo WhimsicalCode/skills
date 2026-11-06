@@ -1,0 +1,39 @@
+name: Something went wrong
+description: A skill failed, stopped, or made something you didn't expect.
+labels: [bug]
+body:
+  - type: dropdown
+    id: skill
+    attributes:
+      label: Skill
+      options:
+        - app-wireframe
+        - Other (say which below)
+    validations:
+      required: true
+  - type: input
+    id: agent
+    attributes:
+      label: Agent and model
+      description: For example Claude Code with Opus, the Claude desktop app, Cursor with GPT.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Skill version
+      description: In Claude Code, `/plugin` shows it. Otherwise, the release you downloaded.
+  - type: textarea
+    id: prompt
+    attributes:
+      label: What you asked
+      description: The prompt, and the board link if you can share it.
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: Error messages, where it stopped, what looked wrong. Leave out customer data and tokens.
+    validations:
+      required: true

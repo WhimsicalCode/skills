@@ -1,0 +1,23 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+      - run: uv run --group dev ruff check .
+      # tests/repo checks every skill against the conventions; tests/<name> holds each skill's own
+      # tests. Each folder runs in its own pytest process, since their conftest.py files would clash.
+      - name: pytest
+        run: |
+          for dir in tests/*/; do
+            echo "::group::$dir"
+            uv run --group dev pytest "$dir"
+            echo "::endgroup::"
+          done

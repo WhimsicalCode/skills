@@ -1,7 +1,9 @@
-# Run folders hold screenshots downloaded from Mobbin: keep them out of version control.
+# Run folders hold screenshots and customer data: keep them out of version control.
 wireframes/
+dist/
 .venv/
 __pycache__/
 .pytest_cache/
 .ruff_cache/
 .DS_Store
+.claude/settings.local.json
