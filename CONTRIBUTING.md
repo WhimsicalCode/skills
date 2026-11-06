@@ -34,7 +34,7 @@ If you have Claude Code, also run `claude plugin validate .`.
   - Claude Code: `/plugin marketplace add ./` from the repository root, then
     `/plugin install <name>@whimsical`. Run `/plugin marketplace update whimsical` after
     each change.
-  - Other agents: `npx skills add ./ --skill <name>`.
+  - Other agents: `npx skills add ./ --skill <name> --agent <agent>`.
 - Say in the pull request which agents and models you tried it with.
 
 ## Adding a skill

@@ -20,15 +20,24 @@ guide, linked above, lists them and covers the rest of the setup.
 
 ### Claude Code
 
-Add the Whimsical marketplace once, then install the skills you want:
+With [Node.js](https://nodejs.org) installed, run this in a terminal, with the skill's
+name, then add the Whimsical MCP:
+
+```sh
+npx skills add WhimsicalCode/skills --skill app-wireframe --agent claude-code -g
+claude mcp add --transport http --scope user whimsical https://mcp.whimsical.com/mcp
+```
+
+`-g` makes the skill available in every folder. Add any other MCP server the skill's guide
+lists the same way, and skip the ones `claude mcp list` already shows. Then start Claude
+Code, run `/mcp` and sign in.
+
+Or install it as a plugin, which adds the MCP servers for you:
 
 ```text
 /plugin marketplace add WhimsicalCode/skills
 /plugin install app-wireframe@whimsical
 ```
-
-Each plugin adds its skill and the MCP servers it needs. Restart Claude Code and run
-`/mcp` to sign in.
 
 ### Claude apps (claude.ai and the desktop app)
 
@@ -42,14 +51,16 @@ Each plugin adds its skill and the MCP servers it needs. Restart Claude Code and
 
 ### Cursor, Codex, GitHub Copilot, Gemini CLI and other agents
 
-With [Node.js](https://nodejs.org) installed, run this in a terminal and pick your agent
-when asked:
+With [Node.js](https://nodejs.org) installed, run this in a terminal, with the skill's
+name and your agent:
 
 ```sh
-npx skills add WhimsicalCode/skills --skill app-wireframe
+npx skills add WhimsicalCode/skills --skill app-wireframe --agent cursor -g
 ```
 
-It copies the skill where your agent looks for skills, using the open
+Replace `cursor` with `codex`, `github-copilot`, `gemini-cli` or
+[another agent's name](https://github.com/vercel-labs/skills/blob/main/docs/agents.md).
+This copies the skill where your agent looks for skills, using the open
 [skills](https://github.com/vercel-labs/skills) installer. Without Node.js, unzip the
 skill's zip from the [latest release](https://github.com/WhimsicalCode/skills/releases/latest)
 into that folder yourself. Either way, then add the MCP servers the skill's guide lists,

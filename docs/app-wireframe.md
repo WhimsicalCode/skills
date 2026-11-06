@@ -112,14 +112,26 @@ Mobbin, `https://api.mobbin.com/mcp` (skip Mobbin if you only use your own scree
 
 ### Claude Code
 
+With [Node.js](https://nodejs.org) installed, run this in a terminal:
+
+```sh
+npx skills add WhimsicalCode/skills --skill app-wireframe --agent claude-code -g
+claude mcp add --transport http --scope user whimsical https://mcp.whimsical.com/mcp
+claude mcp add --transport http --scope user mobbin https://api.mobbin.com/mcp
+```
+
+`-g` makes the skill available in every folder. Skip the `claude mcp add` lines for servers
+`claude mcp list` already shows. Then start Claude Code, run `/mcp`, and sign in to
+Whimsical and Mobbin.
+
+Or install it as a plugin, which adds both MCP servers for you:
+
 ```text
 /plugin marketplace add WhimsicalCode/skills
 /plugin install app-wireframe@whimsical
 ```
 
-The plugin adds the skill and both MCP servers. Restart Claude Code, run `/mcp`, and
-sign in to Whimsical and Mobbin. If you already had either server configured, you'll
-see it twice; disable one in `/mcp`.
+If you already had either server configured, you'll see it twice in `/mcp`; disable one.
 
 ### Claude apps (claude.ai and the desktop app)
 
@@ -137,14 +149,15 @@ with your own screenshots, and please
 
 ### Cursor, Codex, GitHub Copilot, Gemini CLI and other agents
 
-With [Node.js](https://nodejs.org) installed, run this in a terminal and pick your agent
-when asked:
+With [Node.js](https://nodejs.org) installed, run this in a terminal:
 
 ```sh
-npx skills add WhimsicalCode/skills --skill app-wireframe
+npx skills add WhimsicalCode/skills --skill app-wireframe --agent cursor -g
 ```
 
-It copies the skill where your agent looks for skills, using the open
+Replace `cursor` with `codex`, `github-copilot`, `gemini-cli` or
+[another agent's name](https://github.com/vercel-labs/skills/blob/main/docs/agents.md).
+This copies the skill where your agent looks for skills, using the open
 [skills](https://github.com/vercel-labs/skills) installer. Without Node.js, unzip
 [`app-wireframe.zip`](https://github.com/WhimsicalCode/skills/releases/latest/download/app-wireframe.zip)
 into that folder yourself. Either way, then add the two MCP servers following your
