@@ -8,6 +8,8 @@ your own screenshots.
 Make wireframes of Airbnb
 ```
 
+[![The Airbnb board: 15 wireframes, each next to its screenshot from Mobbin](app-wireframe.png)](https://whimsical.com/templates/vacation-rental-app-wireframe)
+
 That one line gets you a Whimsical board with up to 15 Airbnb screens, in the order
 you'd move through the app, each rebuilt as a lo-fi iPhone wireframe. Cards, tab bars
 and list rows are grouped, so you can drag them around and start editing right away.
