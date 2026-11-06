@@ -1,0 +1,15 @@
+{
+  "name": "whimsical",
+  "description": "Agent skills that build Whimsical boards with the Whimsical MCP.",
+  "owner": {
+    "name": "Whimsical",
+    "url": "https://whimsical.com"
+  },
+  "plugins": [
+    {
+      "name": "app-wireframe",
+      "source": "./plugins/app-wireframe",
+      "description": "Turn any app into editable Whimsical wireframes: name an app to pull its screens from Mobbin, or bring your own screenshots."
+    }
+  ]
+}
