@@ -32,6 +32,29 @@
       "license": "MIT",
       "keywords": ["wireframes", "whimsical", "mobbin", "ui", "design", "mcp"],
       "category": "design"
+    },
+    {
+      "name": "renewal-timeline",
+      "version": "0.2.0",
+      "description": "Turn a customer's renewal emails into a Whimsical timeline board and a renewal write-up: every offer, the pricing table, NRR and open items.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/renewal-timeline"],
+      "mcpServers": {
+        "whimsical": {
+          "type": "http",
+          "url": "https://mcp.whimsical.com/mcp"
+        }
+      },
+      "author": {
+        "name": "Whimsical",
+        "url": "https://whimsical.com"
+      },
+      "homepage": "https://github.com/WhimsicalCode/skills/blob/main/docs/renewal-timeline.md",
+      "repository": "https://github.com/WhimsicalCode/skills",
+      "license": "MIT",
+      "keywords": ["renewals", "customer-success", "sales", "timeline", "whimsical", "mcp"],
+      "category": "productivity"
     }
   ]
 }

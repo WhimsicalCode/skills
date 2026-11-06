@@ -1,0 +1,87 @@
+{
+  "customer": "Initech",
+  "vendor": "Acme",
+  "currency": "usd",
+  "unit_label": "seat",
+  "as_of": "2026-12-10",
+  "expiry_date": "2026-12-31",
+  "contract": {
+    "previous": {"quantity": 250, "unit_price": 180, "amount": 45000, "interval": "year",
+                 "note": "Jan 1 to Dec 31, 2026"},
+    "new": {"quantity": 320, "unit_price": 168, "amount": 53760, "interval": "year", "agreed": "2026-11-20",
+            "note": "2-year term, price locked; SSO included; extra seats at the same rate"}
+  },
+  "usage": {
+    "as_of": "2026-12-08",
+    "source": "Admin dashboard export",
+    "current": 298,
+    "active_90d": 281,
+    "active_30d": 262,
+    "active_removed": 2
+  },
+  "open_items": ["Invoice 320 seats from Jan 1"],
+  "people": [
+    {"name": "Tom Becker", "role": "Account Executive", "company": "Acme"},
+    {"name": "Priya Shah", "role": "Head of IT", "company": "Initech"},
+    {"name": "Marcus Hale", "role": "Procurement", "company": "Initech"}
+  ],
+  "events": [
+    {"date": "2026-09-15", "side": "vendor", "phase": "Kickoff",
+     "title": "Renewal kickoff booked", "detail": "Agenda: growth plans and the security review"},
+    {"date": "2026-09-17", "side": "customer", "phase": "Kickoff",
+     "title": "Team growing to about 320", "detail": ["Two new offices open in Q1", "Wants pricing for 320 seats"]},
+    {"date": "2026-09-22", "side": "vendor", "phase": "Kickoff",
+     "title": "Usage summary shared", "detail": ["298 people on 250 paid seats", "Expansion quote to follow"]},
+
+    {"date": "2026-09-29", "side": "customer", "kind": "blocker", "resolved": "2026-10-20", "phase": "Security review",
+     "title": "Security review required", "detail": ["New vendor policy: SOC 2 report and questionnaire",
+                                                     "Needed before any signature"]},
+    {"date": "2026-10-02", "side": "vendor", "phase": "Security review",
+     "title": "SOC 2 report shared", "detail": "Through the trust portal, under NDA"},
+    {"date": "2026-10-09", "side": "vendor", "phase": "Security review",
+     "title": "Questionnaire returned", "detail": "142 answers, 2 open points on data retention"},
+    {"date": "2026-10-14", "side": "customer", "phase": "Security review",
+     "title": "Asks about data deletion", "detail": "Wants data deleted within 30 days of leaving"},
+    {"date": "2026-10-16", "side": "vendor", "kind": "milestone", "phase": "Security review",
+     "title": "Deletion terms added to the DPA", "detail": "30-day deletion on exit"},
+    {"date": "2026-10-20", "side": "customer", "kind": "milestone", "phase": "Security review",
+     "title": "Security review passed"},
+
+    {"date": "2026-10-23", "side": "vendor", "phase": "Negotiation",
+     "title": "Expansion quote: 320 seats", "detail": ["Same rate as this year", "1-year term"],
+     "offer": {"quantity": 320, "unit_price": 180, "amount": 57600, "interval": "year"}},
+    {"date": "2026-10-28", "side": "customer", "phase": "Negotiation",
+     "title": "Ask: 320 seats at $150", "detail": ["Volume discount for 70 more seats", "Budget is flat next year"],
+     "offer": {"quantity": 320, "unit_price": 150, "amount": 48000, "interval": "year"}},
+    {"date": "2026-11-03", "side": "vendor", "phase": "Negotiation",
+     "title": "Two options", "detail": ["A) 1 year at $165", "B) 2 years at $160, price locked"],
+     "offer": [
+       {"quantity": 320, "unit_price": 165, "amount": 52800, "interval": "year", "note": "1-year term"},
+       {"quantity": 320, "unit_price": 160, "amount": 51200, "interval": "year", "note": "2-year term, price locked"}
+     ]},
+    {"date": "2026-11-06", "side": "customer", "phase": "Negotiation",
+     "title": "SSO must be included", "detail": ["Security wants SSO on every seat", "Today it's a paid add-on"]},
+    {"date": "2026-11-10", "side": "vendor", "phase": "Negotiation",
+     "title": "Counter: 320 at $172 with SSO", "detail": "2-year term, price locked",
+     "offer": {"quantity": 320, "unit_price": 172, "amount": 55040, "interval": "year"}},
+    {"date": "2026-11-13", "side": "customer", "phase": "Negotiation",
+     "title": "Counter: 320 at $164", "detail": "Keeps SSO and the 2-year lock",
+     "offer": {"quantity": 320, "unit_price": 164, "amount": 52480, "interval": "year"}},
+    {"date": "2026-11-17", "side": "vendor", "kind": "milestone", "phase": "Negotiation",
+     "title": "Final offer: 320 at $168", "detail": ["SSO included, 2-year price lock", "Extra seats at the same rate"],
+     "offer": {"quantity": 320, "unit_price": 168, "amount": 53760, "interval": "year"}},
+
+    {"date": "2026-11-20", "side": "customer", "kind": "acceptance", "phase": "Close",
+     "title": "Terms accepted", "detail": "Legal will review the order form"},
+    {"date": "2026-11-23", "side": "vendor", "kind": "milestone", "phase": "Close",
+     "title": "Order form sent"},
+    {"date": "2026-12-01", "side": "customer", "phase": "Close",
+     "title": "Redline on the liability cap", "detail": "Asks for 2x fees instead of 1x"},
+    {"date": "2026-12-03", "side": "vendor", "phase": "Close",
+     "title": "Liability cap agreed at 1.5x", "detail": "Updated order form sent"},
+    {"date": "2026-12-09", "side": "customer", "kind": "milestone", "phase": "Close",
+     "title": "Order form signed"},
+    {"date": "2026-12-10", "side": "vendor", "kind": "milestone", "phase": "Close",
+     "title": "Countersigned", "detail": ["Executed copy sent", "Billing moves to 320 seats on Jan 1"]}
+  ]
+}

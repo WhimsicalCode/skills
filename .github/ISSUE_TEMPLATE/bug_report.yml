@@ -8,6 +8,7 @@ body:
       label: Skill
       options:
         - app-wireframe
+        - renewal-timeline
         - Other (say which below)
     validations:
       required: true
