@@ -6,8 +6,8 @@
     "name": "Whimsical",
     "url": "https://whimsical.com"
   },
-  "homepage": "https://github.com/WhimsicalCode/app-wireframe",
-  "repository": "https://github.com/WhimsicalCode/app-wireframe",
+  "homepage": "https://github.com/WhimsicalCode/skills/tree/main/plugins/app-wireframe",
+  "repository": "https://github.com/WhimsicalCode/skills",
   "license": "MIT",
   "keywords": [
     "wireframes",

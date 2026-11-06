@@ -33,7 +33,7 @@ CARD_TYPES = {"image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp"}
 MAX_PAGE_BYTES = 5 * 1024 * 1024
 MAX_CARD_BYTES = 2 * 1024 * 1024
 MAX_REDIRECTS = 5
-USER_AGENT = "app-wireframe (+https://github.com/WhimsicalCode/app-wireframe)"
+USER_AGENT = "app-wireframe (+https://github.com/WhimsicalCode/skills)"
 
 
 def parse_link(text):

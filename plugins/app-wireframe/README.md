@@ -15,7 +15,7 @@ Every wireframe links back to its screen on Mobbin.
 
 This is a new project, and most of it was written by coding agents. We've used it at
 Whimsical to [wireframe 20 apps](#examples), but it hasn't been tested much with other agents or
-setups. If something breaks, please [open an issue](https://github.com/WhimsicalCode/app-wireframe/issues).
+setups. If something breaks, please [open an issue](https://github.com/WhimsicalCode/skills/issues).
 
 ## Two ways in
 
@@ -108,8 +108,8 @@ The apps belong to their makers. Whimsical isn't affiliated with any of them.
 ### Claude Code
 
 ```text
-/plugin marketplace add WhimsicalCode/app-wireframe
-/plugin install app-wireframe@app-wireframe
+/plugin marketplace add WhimsicalCode/skills
+/plugin install app-wireframe@whimsical
 ```
 
 The plugin adds the skill and both MCP servers. Restart Claude Code, run `/mcp`, and
@@ -205,6 +205,9 @@ under their own privacy policies:
 
 ## Development
 
+This plugin lives in `plugins/app-wireframe/` of the
+[Whimsical skills](https://github.com/WhimsicalCode/skills) repository.
+
 ```text
 skills/app-wireframe/
   SKILL.md                 the workflow the agent follows
@@ -216,9 +219,11 @@ skills/app-wireframe/
     mobbin_link.py         reads a pasted Mobbin link: app, screen tags, search query
     icon_index.json        icon names, aliases and descriptions for the icon search
 tests/                     tests for the scripts
-.claude-plugin/            Claude Code plugin and marketplace manifests
+.claude-plugin/            Claude Code plugin manifest
 .mcp.json                  the Whimsical and Mobbin MCP servers
 ```
+
+From `plugins/app-wireframe/`:
 
 ```sh
 uv run --group dev pytest
@@ -228,4 +233,4 @@ claude plugin validate .
 
 ## License
 
-[MIT](LICENSE)
+[MIT](../../LICENSE)
