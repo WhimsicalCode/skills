@@ -1,3 +1,5 @@
+![Any app, as wireframes.](covers/app-wireframe.png)
+
 # App Wireframe
 
 Turn any app into editable wireframes in [Whimsical](https://whimsical.com). Name an
