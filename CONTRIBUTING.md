@@ -58,15 +58,18 @@ If you have Claude Code, also run `claude plugin validate .`.
 
 A release publishes a zip of every skill, for the Claude apps and for agents without a
 skills installer. Links to `releases/latest/download/<name>.zip` always point to the
-newest one. After merging to `main`, tag the date and push the tag:
+newest one. After merging to `main`, update your local `main`, then tag the date and push
+the tag:
 
 ```sh
+git checkout main && git pull
 git tag v2026.11.06 && git push origin v2026.11.06
 ```
 
 Add a suffix for a second release on the same day, like `v2026.11.06.2`. Users of the
 Claude Code marketplace get updates from `main` without a release.
 
-[whimsical.com/skills](https://whimsical.com/skills) shows the skills as they are in the
-latest release, from the website's next deploy. Redeploy the website after a release to
-publish it there.
+Then redeploy the website. [whimsical.com/skills](https://whimsical.com/skills) shows the
+skills as they are in the latest release, but only from the website's next deploy, and a
+release doesn't trigger one. Until it's redeployed, the site still shows the previous
+release.

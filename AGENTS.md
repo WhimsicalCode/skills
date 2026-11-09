@@ -12,5 +12,10 @@ before changing a skill and [CONTRIBUTING.md](CONTRIBUTING.md) before adding one
 - Bump the skill's version in `marketplace.json` when you change it.
 - A new skill needs a cover for whimsical.com/skills: follow
   [docs/covers/README.md](docs/covers/README.md), then render and look at it.
+- A release isn't done when the tag is pushed. whimsical.com/skills only shows a release
+  once the website is redeployed, which doesn't happen on its own. After pushing a tag,
+  tell the person you're working with that the website needs redeploying, and keep
+  reminding them until they say it's done; otherwise the site falls behind the skills.
+  Tag from an up-to-date `main` (`git pull` first), so the release has what was merged.
 - Don't run a skill against real Whimsical boards, Mobbin or customer data unless the
   person you're working with asks you to.
