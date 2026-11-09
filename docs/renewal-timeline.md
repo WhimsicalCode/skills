@@ -1,3 +1,5 @@
+![Every renewal, on one timeline.](covers/renewal-timeline.png)
+
 # Renewal Timeline
 
 Turn a customer's renewal emails into a timeline in [Whimsical](https://whimsical.com), and a

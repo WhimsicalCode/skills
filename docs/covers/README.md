@@ -1,7 +1,7 @@
 # Skill covers
 
-Every skill has a cover: a 1600x1000 image, saved at 2x, that whimsical.com shows on the
-skill's card and at the top of its page. All covers share one layout, `template.html`; what
+Every skill has a cover: a 1600x1000 image, saved at 2x, at the top of the skill's guide,
+and on its card and page on whimsical.com. All covers share one layout, `template.html`; what
 changes per skill is a two-line text spec and one illustration. The page around the cover
 already says what the skill does and shows a prompt, so the cover only names the skill's
 promise and shows it.
@@ -35,7 +35,9 @@ For a skill named `<name>`:
    ```
 
 `tests/repo/` checks that every skill has all three files and that the PNG is the right
-size. Commit the PNG: the website reads it from the repository at the latest release.
+size. Commit the PNG, and put it at the top of the skill's guide, above its title:
+`![<headline>](covers/<name>.png)`. The website reads it from the repository at the latest
+release.
 
 ## Drawing the illustration
 

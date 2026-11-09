@@ -99,7 +99,11 @@ def test_has_guide_tests_and_gallery_row(skill):
 def test_guide_intro_is_what_the_website_shows(skill):
     # whimsical.com/skills reads the title and the intro, up to the first "##". See CONVENTIONS.md.
     guide = (ROOT / "docs" / f"{skill.name}.md").read_text()
-    assert re.match(r"# \S.*\n\n", guide), "the guide starts with a '# Title' line, then a blank line"
+    cover = f"(covers/{skill.name}.png)\n\n"
+    assert guide.startswith("![") and cover in guide.split("\n", 1)[0] + "\n\n", \
+        f"the guide starts with its cover: ![<headline>]{cover.strip()}"
+    guide = guide.split("\n\n", 1)[1]
+    assert re.match(r"# \S.*\n\n", guide), "the cover is followed by a '# Title' line, then a blank line"
     intro = guide.split("\n## ", 1)[0].split("\n", 1)[1].strip()
     first = intro.split("\n\n", 1)[0]
     assert not first.startswith(("```", "!", "[!", "|", "-")), "the intro opens with a paragraph of prose"

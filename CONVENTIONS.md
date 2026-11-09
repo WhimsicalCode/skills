@@ -64,7 +64,8 @@ as many agents as possible. `tests/repo/` checks the ones marked *(tested)*.
 [whimsical.com/skills](https://whimsical.com/skills) lists every skill in the latest
 release, built from this repository. Each skill's page shows:
 
-- Its title, the guide's `# Title` line, which is the guide's first line *(tested)*.
+- Its title, the guide's `# Title` line, which comes right after its cover: a guide starts
+  with `![<headline>](covers/<name>.png)`, a blank line, then `# Title` *(tested)*.
 - Its card description, the `description` in its `marketplace.json` entry.
 - A summary, the guide's intro: everything before its first `##` heading. The intro starts
   with one paragraph saying what the skill does, then a ```` ```text ```` block with an
