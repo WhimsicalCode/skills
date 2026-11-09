@@ -2,7 +2,9 @@
 
 Every skill has a cover: a 1600x1000 image, saved at 2x, that whimsical.com shows on the
 skill's card and at the top of its page. All covers share one layout, `template.html`; what
-changes per skill is a short text spec and one illustration.
+changes per skill is a two-line text spec and one illustration. The page around the cover
+already says what the skill does and shows a prompt, so the cover only names the skill's
+promise and shows it.
 
 ![The renewal-timeline cover](renewal-timeline.png)
 
@@ -15,20 +17,14 @@ For a skill named `<name>`:
    ```json
    {
      "category": "Go to market",
-     "headline": "Every renewal,\non one timeline.",
-     "subtitle": "Emails and CRM in. Offers, prices and the write-up out.",
-     "prompt": "Build the renewal timeline for Acme"
+     "headline": "Every renewal,\non one timeline."
    }
    ```
 
    - `category`: the kind of work, in two or three words, like `Wireframes` or
      `Go to market`.
-   - `headline`: the promise, in at most two lines of about 16 characters each. Put the
+   - `headline`: the promise, in at most two lines of about 15 characters each. Put the
      line break in yourself with `\n`.
-   - `subtitle`: what goes in and what comes out, in one sentence of about 60 characters:
-     "X in. Y out."
-   - `prompt`: a general prompt anyone could type, with a fictional company such as Acme
-     or "this screenshot". Not a real customer or a real app.
 
 2. Draw `art/<name>.svg`, following the style below.
 3. Render it, then look at `<name>.png` before committing it:

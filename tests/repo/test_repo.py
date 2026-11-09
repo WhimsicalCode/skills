@@ -16,7 +16,7 @@ SKILLS = sorted(p for p in (ROOT / "skills").iterdir() if p.is_dir())
 MARKETPLACE = json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_text())
 FRONTMATTER_KEYS = {"name", "description", "license", "metadata", "allowed-tools"}
 COVERS = ROOT / "docs" / "covers"
-COVER_KEYS = {"category", "headline", "subtitle", "prompt"}
+COVER_KEYS = {"category", "headline"}
 # Distribution names whose import name differs.
 IMPORT_NAMES = {"pillow": "PIL"}
 
@@ -104,6 +104,12 @@ def test_guide_intro_is_what_the_website_shows(skill):
     first = intro.split("\n\n", 1)[0]
     assert not first.startswith(("```", "!", "[!", "|", "-")), "the intro opens with a paragraph of prose"
     assert re.search(r"^```text\n.+?\n```$", intro, re.S | re.M), "the intro has a ```text block with a prompt"
+    install = re.search(r"^## Install\n(.*?)(?=^## |\Z)", guide, re.S | re.M)
+    assert install, "the guide has an '## Install' section"
+    tabs = re.findall(r"^### (.+)$", install[1], re.M)
+    assert len(tabs) >= 2, "'## Install' has one '### ' subsection per agent"
+    labels = [t.split(" (")[0] for t in tabs]
+    assert all(len(label) <= 20 for label in labels), f"tab names, before ' (', stay short: {labels}"
 
 
 @pytest.mark.parametrize("skill", SKILLS, ids=lambda p: p.name)

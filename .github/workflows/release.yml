@@ -27,13 +27,3 @@ jobs:
         with:
           files: dist/*.zip
           generate_release_notes: true
-      # whimsical.com/skills is built from the latest release; a Cloudflare Pages deploy hook rebuilds it.
-      - name: Rebuild whimsical.com/skills
-        env:
-          DEPLOY_HOOK: ${{ secrets.WEBSITE_DEPLOY_HOOK }}
-        run: |
-          if [ -z "$DEPLOY_HOOK" ]; then
-            echo "::warning::WEBSITE_DEPLOY_HOOK isn't set, so whimsical.com/skills wasn't rebuilt."
-            exit 0
-          fi
-          curl --fail --silent --show-error --max-time 30 -X POST "$DEPLOY_HOOK"

@@ -67,5 +67,6 @@ git tag v2026.11.06 && git push origin v2026.11.06
 Add a suffix for a second release on the same day, like `v2026.11.06.2`. Users of the
 Claude Code marketplace get updates from `main` without a release.
 
-A release also rebuilds [whimsical.com/skills](https://whimsical.com/skills), which shows
-the skills as they are in the latest release.
+[whimsical.com/skills](https://whimsical.com/skills) shows the skills as they are in the
+latest release, from the website's next deploy. Redeploy the website after a release to
+publish it there.

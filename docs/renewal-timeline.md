@@ -15,11 +15,6 @@ NRR, usage if you have the numbers, and the open items.
 
 ![Example timeline: a fictional Initech renewal](renewal-timeline.png)
 
-This is a new project, and most of it was written by coding agents. We've used it at
-Whimsical on real renewals, in Claude Code and on claude.ai, but it hasn't been tested much
-with other agents or tools. If something breaks, please
-[open an issue](https://github.com/WhimsicalCode/skills/issues/new/choose).
-
 ## What you'll get
 
 A new board called `<Customer> <Year> Renewal Timeline`:
@@ -38,6 +33,13 @@ and the open items.
 
 Ask again later, with new emails or a few lines of what happened, and the agent adds the new
 steps to the same board.
+
+## Status
+
+This is a new project, and most of it was written by coding agents. We've used it at
+Whimsical on real renewals, in Claude Code and on claude.ai, but it hasn't been tested much
+with other agents or tools. If something breaks, please
+[open an issue](https://github.com/WhimsicalCode/skills/issues/new/choose).
 
 ## Requirements
 
@@ -90,7 +92,7 @@ If you already had Whimsical configured, you'll see it twice in `/mcp`; disable 
 3. Still in **Customize**, under **Connectors**, add Whimsical, and the connector for your
    email or CRM.
 
-### Cursor, Codex, GitHub Copilot, Gemini CLI and other agents
+### Other agents (Cursor, Codex, GitHub Copilot, Gemini CLI and more)
 
 With [Node.js](https://nodejs.org) installed, run this in a terminal:
 

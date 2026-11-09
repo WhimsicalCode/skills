@@ -74,6 +74,13 @@ release, built from this repository. Each skill's page shows:
   `docs/covers/art/<name>.svg` *(tested)*.
   [docs/covers/README.md](docs/covers/README.md) explains how to make one.
 - The MCP servers it connects to, from its `marketplace.json` entry.
+- Its install steps, the guide's `## Install` section: the paragraph under the heading,
+  then one tab per `### ` heading, named by the heading's text before any ` (` *(tested)*.
+  Code blocks there get a copy button, so keep each one a set of commands to run as is.
+- An example board, if the intro's image links to one: `[![alt](image.png)](board URL)`.
+
+Keep the intro about what the skill does. Caveats, like how new the skill is, go in a
+later section (`## Status`), so they stay in the guide but off the website.
 
 The page's URL is `whimsical.com/skills/<name>`, so renaming a skill breaks its link.
 
