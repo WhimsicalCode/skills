@@ -72,5 +72,6 @@ ask whoever owns the website's design.
 
 ## Fonts
 
-`fonts/` holds Dinsical, for the headline, and Monsical, for everything else: Whimsical's
-fonts, under the [SIL Open Font License](fonts/OFL-Monsical.txt).
+The headline is set in Dinsical and everything else in Monsical, Whimsical's open-source
+fonts. `template.html` loads them from [WhimsicalCode/fonts](https://github.com/WhimsicalCode/fonts),
+so rendering needs an internet connection.

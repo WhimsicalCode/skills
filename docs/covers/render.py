@@ -50,6 +50,9 @@ def main():
             page.goto((COVERS / "template.html").as_uri())
             page.evaluate(FILL, {"spec": spec, "art": art})
             page.evaluate("document.fonts.ready")
+            # The fonts come from github.com/WhimsicalCode/fonts; don't save a cover in a fallback font.
+            if not page.evaluate("['700 10px Dinsical', '10px Monsical'].every(f => document.fonts.check(f))"):
+                sys.exit("Couldn't load Dinsical and Monsical from github.com/WhimsicalCode/fonts")
             page.screenshot(path=COVERS / f"{name}.png")
             print(f"docs/covers/{name}.png")
         browser.close()

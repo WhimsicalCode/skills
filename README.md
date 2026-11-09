@@ -89,5 +89,4 @@ access and how to report a problem.
 
 ## License
 
-[MIT](LICENSE), except the fonts in `docs/covers/fonts/`, which are under the
-[SIL Open Font License](docs/covers/fonts/OFL-Monsical.txt).
+[MIT](LICENSE)

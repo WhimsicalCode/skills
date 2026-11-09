@@ -5,8 +5,9 @@
 <!-- The cover layout. render.py fills it from <name>.json and art/<name>.svg, and saves
      1600x1000 at 2x. Change it here and re-render every cover. -->
 <style>
-  @font-face { font-family: Dinsical; src: url("fonts/Dinsical-wght.woff2"); font-weight: 100 900; }
-  @font-face { font-family: Monsical; src: url("fonts/Monsical-Regular.woff2"); font-weight: 400; }
+  /* Whimsical's fonts, from their public repo: github.com/WhimsicalCode/fonts */
+  @font-face { font-family: Dinsical; font-weight: 100 900; src: url("https://raw.githubusercontent.com/WhimsicalCode/fonts/release-2026-06-03/dinsical/woff2/Dinsical%5Bwght%5D.woff2"); }
+  @font-face { font-family: Monsical; font-weight: 400; src: url("https://raw.githubusercontent.com/WhimsicalCode/fonts/release-2026-06-03/monsical/woff2/Monsical-Regular.woff2"); }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --ink: #220a33; --muted: #8f8497;
