@@ -1,0 +1,35 @@
+<svg viewBox="0 0 720 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app screen: purple, with a hero image, a title, text and two buttons. -->
+  <rect x="96" y="60" width="200" height="400" rx="18" fill="#efd9ff" stroke="#cf8bff" stroke-width="2"/>
+  <rect x="180" y="74" width="26" height="5" rx="2.5" fill="#cf8bff"/>
+  <circle cx="214" cy="76.5" r="2.5" fill="#cf8bff"/>
+  <rect x="108" y="94" width="176" height="150" rx="12" fill="#dfb2ff" stroke="#cf8bff" stroke-width="2"/>
+  <rect x="172" y="145" width="48" height="48" rx="7" fill="#cf8bff"/>
+  <circle cx="186" cy="159" r="5" fill="#efd9ff"/>
+  <path d="M177 188L192 172L201 181L207 175L215 188Z" fill="#efd9ff"/>
+  <rect x="108" y="262" width="120" height="12" rx="6" fill="#cf8bff"/>
+  <rect x="108" y="284" width="168" height="8" rx="4" fill="#dfb2ff"/>
+  <rect x="108" y="300" width="140" height="8" rx="4" fill="#dfb2ff"/>
+  <rect x="108" y="324" width="82" height="58" rx="8" fill="#dfb2ff" stroke="#cf8bff" stroke-width="2"/>
+  <rect x="202" y="324" width="82" height="58" rx="8" fill="#dfb2ff" stroke="#cf8bff" stroke-width="2"/>
+  <rect x="108" y="398" width="176" height="32" rx="5" fill="#9e39e5"/>
+
+  <!-- The arrow, as on the site's wireframes card. -->
+  <path d="M322 260H392" stroke="#b8b0bc" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M392 254L401 260L392 266Z" fill="#b8b0bc"/>
+
+  <!-- The same screen as a gray wireframe: crossed-out image, text bars, outlined cards. -->
+  <rect x="424" y="60" width="200" height="400" rx="18" fill="#f0eef2" stroke="#e1dce5" stroke-width="2"/>
+  <rect x="508" y="74" width="26" height="5" rx="2.5" fill="#e1dce5"/>
+  <circle cx="542" cy="76.5" r="2.5" fill="#e1dce5"/>
+  <clipPath id="image-placeholder"><rect x="436" y="94" width="176" height="150" rx="12"/></clipPath>
+  <rect x="436" y="94" width="176" height="150" rx="12" fill="#f6f4f8"/>
+  <path d="M436 94L612 244M612 94L436 244" stroke="#e1dce5" stroke-width="2" clip-path="url(#image-placeholder)"/>
+  <rect x="436" y="94" width="176" height="150" rx="12" stroke="#d6d0db" stroke-width="2"/>
+  <rect x="436" y="262" width="120" height="12" rx="6" fill="#d6d0db"/>
+  <rect x="436" y="284" width="168" height="8" rx="4" fill="#e1dce5"/>
+  <rect x="436" y="300" width="140" height="8" rx="4" fill="#e1dce5"/>
+  <rect x="436" y="324" width="82" height="58" rx="8" fill="#f6f4f8" stroke="#e1dce5" stroke-width="2"/>
+  <rect x="530" y="324" width="82" height="58" rx="8" fill="#f6f4f8" stroke="#e1dce5" stroke-width="2"/>
+  <rect x="436" y="398" width="176" height="32" rx="5" fill="#b8b0bc"/>
+</svg>

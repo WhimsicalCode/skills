@@ -15,10 +15,6 @@ you'd move through the app, each rebuilt as a lo-fi iPhone wireframe. Cards, tab
 and list rows are grouped, so you can drag them around and start editing right away.
 Every wireframe links back to its screen on Mobbin.
 
-This is a new project, and most of it was written by coding agents. We've used it at
-Whimsical to [wireframe 20 apps](#examples), but it hasn't been tested much with other agents or
-setups. If something breaks, please [open an issue](https://github.com/WhimsicalCode/skills/issues).
-
 ## Two ways in
 
 ### Name an app, with the Mobbin MCP
@@ -88,6 +84,12 @@ Mobbin.
 
 The apps belong to their makers. Whimsical isn't affiliated with any of them.
 
+## Status
+
+This is a new project, and most of it was written by coding agents. We've used it at
+Whimsical to [wireframe 20 apps](#examples), but it hasn't been tested much with other agents or
+setups. If something breaks, please [open an issue](https://github.com/WhimsicalCode/skills/issues).
+
 ## Requirements
 
 - An agent that supports skills, remote MCP servers and images, such as
@@ -147,7 +149,7 @@ with your own screenshots, and please
 3. Still in **Customize**, under **Connectors**, add Whimsical, and Mobbin if you have a
    Mobbin plan.
 
-### Cursor, Codex, GitHub Copilot, Gemini CLI and other agents
+### Other agents (Cursor, Codex, GitHub Copilot, Gemini CLI and more)
 
 With [Node.js](https://nodejs.org) installed, run this in a terminal:
 

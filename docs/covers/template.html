@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- The cover layout. render.py fills it from <name>.json and art/<name>.svg, and saves
+     1600x1000 at 2x. Change it here and re-render every cover. -->
+<style>
+  /* Whimsical's fonts, from their public repo: github.com/WhimsicalCode/fonts */
+  @font-face { font-family: Dinsical; font-weight: 100 900; src: url("https://raw.githubusercontent.com/WhimsicalCode/fonts/release-2026-06-03/dinsical/woff2/Dinsical%5Bwght%5D.woff2"); }
+  @font-face { font-family: Monsical; font-weight: 400; src: url("https://raw.githubusercontent.com/WhimsicalCode/fonts/release-2026-06-03/monsical/woff2/Monsical-Regular.woff2"); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #220a33; --muted: #8f8497;
+    --bg: #f7f7f8; --canvas: #fbfafc; --line: #eae6ed; --bar: #e1dce5; --purple: #9e39e5;
+  }
+  body { width: 1600px; height: 1000px; overflow: hidden; font-family: Monsical, monospace; color: var(--ink); background: var(--bg); position: relative; }
+  .text { position: absolute; left: 80px; top: 72px; bottom: 72px; width: 720px; display: flex; flex-direction: column; }
+  .kicker { font-size: 26px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); display: flex; gap: 12px; align-items: center; }
+  .kicker .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--purple); }
+  h1 { margin: auto 0; font-family: Dinsical, sans-serif; font-size: 108px; line-height: 0.98; white-space: pre; font-weight: 700; letter-spacing: -0.025em; }
+
+  /* The browser window from the tool cards on whimsical.com, running off the right edge. */
+  .window { position: absolute; left: 836px; top: 96px; width: 900px; height: 808px; background: var(--canvas); border: 3px solid var(--line); border-radius: 28px; overflow: hidden; }
+  .chrome { height: 72px; border-bottom: 3px solid var(--line); display: flex; align-items: center; gap: 12px; padding: 0 26px; }
+  .chrome .dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--line); background: var(--canvas); }
+  .chrome .url { margin-left: 22px; height: 28px; border-radius: 14px; background: #f0eef2; border: 2px solid var(--bar); padding: 0 18px; display: flex; align-items: center; font-size: 17px; color: var(--muted); }
+  .art { padding: 92px 0 0 26px; }
+  .art svg { width: 720px; height: 520px; display: block; transform: scale(1.04); transform-origin: top left; }
+</style>
+</head>
+<body>
+  <div class="text">
+    <div class="kicker"><span class="dot"></span>Whimsical skill <span>·</span> <span data-field="category"></span></div>
+    <h1 data-field="headline"></h1>
+  </div>
+  <div class="window">
+    <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url" data-field="slug"></span></div>
+    <div class="art" data-art></div>
+  </div>
+</body>
+</html>

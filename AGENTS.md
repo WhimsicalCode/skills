@@ -10,5 +10,7 @@ before changing a skill and [CONTRIBUTING.md](CONTRIBUTING.md) before adding one
   `uv run --group dev ruff check .`, then `uv run --group dev pytest tests/repo` and
   `uv run --group dev pytest tests/<name>` for each skill you touched.
 - Bump the skill's version in `marketplace.json` when you change it.
+- A new skill needs a cover for whimsical.com/skills: follow
+  [docs/covers/README.md](docs/covers/README.md), then render and look at it.
 - Don't run a skill against real Whimsical boards, Mobbin or customer data unless the
   person you're working with asks you to.

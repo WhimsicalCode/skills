@@ -49,7 +49,7 @@ Or install it as a plugin, which adds the MCP servers for you:
 3. Still in **Customize**, under **Connectors**, add Whimsical and any other connector
    the skill's guide lists.
 
-### Cursor, Codex, GitHub Copilot, Gemini CLI and other agents
+### Other agents (Cursor, Codex, GitHub Copilot, Gemini CLI and more)
 
 With [Node.js](https://nodejs.org) installed, run this in a terminal, with the skill's
 name and your agent:
@@ -71,6 +71,7 @@ following your agent's MCP setup guide.
 ```text
 skills/<name>/                    each skill: SKILL.md, references/, scripts/
 docs/<name>.md                    each skill's guide: what it does, install, use, privacy
+docs/covers/                      each skill's cover for whimsical.com, and how to make one
 tests/<name>/                     each skill's tests, outside the skill so they stay out of its zip
 tests/repo/                       checks every skill against the conventions
 .claude-plugin/marketplace.json   the Claude Code catalog: each skill's version and MCP servers
