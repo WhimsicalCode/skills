@@ -21,8 +21,8 @@ For a skill named `<name>`:
    }
    ```
 
-   - `category`: the kind of work, in two or three words, like `Wireframes` or
-     `Go to market`.
+   - `category`: the kind of work, in two or three words and sentence case, like
+     `Wireframes` or `Go to market`.
    - `headline`: the promise, in at most two lines of about 15 characters each. Put the
      line break in yourself with `\n`.
 
