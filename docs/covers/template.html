@@ -15,8 +15,8 @@
   }
   body { width: 1600px; height: 1000px; overflow: hidden; font-family: Monsical, monospace; color: var(--ink); background: var(--bg); position: relative; }
   .text { position: absolute; left: 80px; top: 72px; bottom: 72px; width: 720px; display: flex; flex-direction: column; }
-  .kicker { font-size: 26px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); display: flex; gap: 12px; align-items: center; }
-  .kicker .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--purple); }
+  /* Like the section labels on whimsical.com: sentence case, semibold, in the brand gradient. */
+  .category { align-self: flex-start; font-family: Dinsical, sans-serif; font-size: 36px; font-weight: 600; background: linear-gradient(93deg, #11007a 2.71%, #6328c3 48.51%, #e36bff 91.53%); -webkit-background-clip: text; background-clip: text; color: transparent; }
   h1 { margin: auto 0; font-family: Dinsical, sans-serif; font-size: 108px; line-height: 0.98; white-space: pre; font-weight: 700; letter-spacing: -0.025em; }
 
   /* The browser window from the tool cards on whimsical.com, running off the right edge. */
@@ -30,7 +30,7 @@
 </head>
 <body>
   <div class="text">
-    <div class="kicker"><span class="dot"></span>Whimsical skill <span>·</span> <span data-field="category"></span></div>
+    <p class="category" data-field="category"></p>
     <h1 data-field="headline"></h1>
   </div>
   <div class="window">
