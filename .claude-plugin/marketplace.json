@@ -35,8 +35,8 @@
     },
     {
       "name": "renewal-timeline",
-      "version": "0.2.0",
-      "description": "Turn a customer's renewal emails into a Whimsical timeline board and a renewal write-up: every offer, the pricing table, NRR and open items.",
+      "version": "0.2.1",
+      "description": "Turn a customer, client or contract renewal into a Whimsical timeline: every offer and counter-offer from your emails or CRM, a pricing table, and a renewal summary with NRR and open items.",
       "source": "./",
       "strict": false,
       "skills": ["./skills/renewal-timeline"],
@@ -53,7 +53,7 @@
       "homepage": "https://github.com/WhimsicalCode/skills/blob/main/docs/renewal-timeline.md",
       "repository": "https://github.com/WhimsicalCode/skills",
       "license": "MIT",
-      "keywords": ["renewals", "customer-success", "sales", "timeline", "whimsical", "mcp"],
+      "keywords": ["renewals", "contract-renewal", "customer-renewal", "subscription", "negotiation", "customer-success", "account-management", "sales", "crm", "nrr", "timeline", "whimsical", "mcp"],
       "category": "productivity"
     }
   ]

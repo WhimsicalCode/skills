@@ -2,8 +2,8 @@
 
 # Renewal Timeline
 
-Turn a customer's renewal emails into a timeline in [Whimsical](https://whimsical.com), and a
-renewal write-up to go with it.
+Turn the emails behind a customer, client or contract renewal into a timeline in
+[Whimsical](https://whimsical.com), and a renewal summary to go with it.
 
 ```text
 Build the renewal timeline for Initech
@@ -12,10 +12,26 @@ Build the renewal timeline for Initech
 Your agent reads the renewal threads in your email or CRM and lays out every step on a board:
 your side on the left, the customer's on the right, each offer and counter-offer with its
 price, the contract expiry date, and what's still open. A pricing table at the top shows how
-the negotiation moved, with the agreed terms highlighted. The write-up covers the deal terms,
+the negotiation moved, with the agreed terms highlighted. The summary covers the deal terms,
 NRR, usage if you have the numbers, and the open items.
 
-![Example timeline: a fictional Initech renewal](renewal-timeline.png)
+![A renewal timeline on a Whimsical board: a fictional Initech contract renewal, with the pricing table on top and every offer and counter-offer below](renewal-timeline.png)
+
+## Who it's for
+
+It's for B2B renewals: a subscription, license or service agreement coming up for renewal,
+where you and your customer go back and forth on seats, price and terms before signing.
+Account executives, customer success and account managers, and deal desks use it to see
+where a renewal stands before a call, or to hand an account over to someone new.
+
+The renewal in the screenshot is made up, but typical: 22 steps over three months, from the
+kickoff call through a security review and seven price proposals to the countersigned order
+form. That was dozens of emails spread over several threads. The board fits it on one
+page.
+
+It works with seat-based SaaS pricing, flat fees, monthly retainers and one-off project fees.
+It's not meant for renewals you handle as a buyer, or for domain names, licenses and
+subscriptions that renew on their own.
 
 ## What you'll get
 
@@ -29,7 +45,7 @@ A new board called `<Customer> <Year> Renewal Timeline`:
 - **The deadline**: the contract's expiry date sits on the timeline at its date, so a late
   signature shows up as one.
 
-And a write-up in chat: the new terms, NRR and the change in revenue, usage against what's
+And a renewal summary in chat: the new terms, NRR and the change in revenue, usage against what's
 billed, what the customer said versus what the numbers show, the negotiation step by step,
 and the open items.
 
@@ -55,7 +71,7 @@ with other agents or tools. If something breaks, please
   does Claude's sandbox; on a Mac that doesn't, the first run offers to install Apple's
   command line tools.
 
-Usage numbers are optional. If you have them (an admin dashboard, a BI tool), the write-up
+Usage numbers are optional. If you have them (an admin dashboard, a BI tool), the summary
 uses them; it never guesses.
 
 ## Install
@@ -134,7 +150,7 @@ Whimsical tools and `python3` for the session keeps it moving.
 ```text
  email / CRM / pasted thread  ─►  events.json  ─►  build_board.py  ─►  Whimsical board
  usage numbers (optional)     ─┘       │
-                                       └──────────►  renewal write-up
+                                       └──────────►  renewal summary
 ```
 
 1. The agent finds the customer's renewal threads and reads the full messages, not
@@ -149,13 +165,30 @@ Whimsical tools and `python3` for the session keeps it moving.
    prints the exact Whimsical calls, and the agent passes them on as they are, so a board
    comes out the same every time.
 4. The agent checks a snapshot of the board, then writes the summary from the same file, so
-   the board and the write-up agree.
+   the board and the summary agree.
 
 To update a board, the script asks for a short read of it (about ten objects), adds only the
 new steps, and moves the expiry date and the end of the timeline.
 
 `build_board.py` uses only Python's standard library and never touches the network: the agent
 talks to Whimsical and hands the results to the script.
+
+## Questions
+
+**Does it work if our pricing isn't per seat?** Yes. Each offer needs a total; seats and a
+price per seat are optional. Tiered prices, flat fees, monthly retainers and project fees
+all fit, and the pricing table labels the amounts to match.
+
+**Can it show a downsell or churn risk, not only an expansion?** Yes. The summary gives the
+change in revenue and NRR either way, and when the customer cuts seats it sets what they
+said next to the usage numbers, if you have them.
+
+**Does it change anything in our CRM or send emails?** No. It only reads your email and CRM.
+The one thing it writes is the Whimsical board.
+
+**Can several people work on the same renewal?** The board is a normal Whimsical board, so
+your team can comment on it and share it. Updates work best when they come from the same
+`renewals/<Customer>/` folder, since `events.json` there is what the next update builds on.
 
 ## Privacy
 
@@ -173,7 +206,7 @@ skills/renewal-timeline/
   references/
     event-schema.md        the events.json format
     board-layout.md        what the board looks like, element by element
-    summary-template.md    the write-up's structure
+    summary-template.md    the summary's structure
   scripts/
     build_board.py         checks events.json, writes the Whimsical calls
   examples/                a small example and a full deal, both fictional
