@@ -30,11 +30,16 @@ If you have Claude Code, also run `claude plugin validate .`.
 - Follow [CONVENTIONS.md](CONVENTIONS.md).
 - Bump the skill's version in `.claude-plugin/marketplace.json`.
 - Update its guide in `docs/<name>.md` if what users see or do changes.
-- Try the change in a real run, not only the tests. To install your working copy:
-  - Claude Code: `/plugin marketplace add ./` from the repository root, then
-    `/plugin install <name>@whimsical`. Run `/plugin marketplace update whimsical` after
-    each change.
-  - Other agents: `npx skills add ./ --skill <name> --agent <agent>`.
+- Try the change in a real run, not only the tests, in Claude Code and in Codex:
+
+  ```sh
+  uv run dev/try.py <name> --agent claude    # or --agent codex
+  ```
+
+  It installs your working copy into a new folder in `~/skill-bench` with the guide's
+  `npx skills add` command, connects only the MCP servers in the skill's `marketplace.json`
+  entry, and starts the agent there. Add files to copy them into the folder. To try the
+  published version instead, name the skill `WhimsicalCode/skills/<name>`.
 - Say in the pull request which agents and models you tried it with.
 
 ## Adding a skill
