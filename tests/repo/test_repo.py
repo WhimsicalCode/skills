@@ -58,6 +58,15 @@ def test_frontmatter(skill):
 
 
 @pytest.mark.parametrize("skill", SKILLS, ids=lambda p: p.name)
+def test_frontmatter_is_valid_yaml(skill):
+    # Installers read the frontmatter as YAML and skip the skill if it doesn't parse. Unquoted values
+    # break on `: ` or ` #` inside them, a trailing `:`, or a leading YAML symbol.
+    for key, value in frontmatter(skill).items():
+        assert not (": " in value or " #" in value or value.endswith(":")
+                    or re.match(r"[-?:,\[\]{}#&*!|>'\"%@`]", value)), f"{key}: reword it so it's plain YAML"
+
+
+@pytest.mark.parametrize("skill", SKILLS, ids=lambda p: p.name)
 def test_skill_body_under_500_lines(skill):
     assert len((skill / "SKILL.md").read_text().splitlines()) < 500
 

@@ -35,7 +35,7 @@
     },
     {
       "name": "renewal-timeline",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Turn a customer, client or contract renewal into a Whimsical timeline: every offer and counter-offer from your emails or CRM, a pricing table, and a renewal summary with NRR and open items.",
       "source": "./",
       "strict": false,
