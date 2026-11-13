@@ -39,7 +39,9 @@ If you have Claude Code, also run `claude plugin validate .`.
   It installs your working copy into a new folder in `~/skill-bench` with the guide's
   `npx skills add` command, connects only the MCP servers in the skill's `marketplace.json`
   entry, and starts the agent there. Add files to copy them into the folder. To try the
-  published version instead, name the skill `WhimsicalCode/skills/<name>`.
+  published version instead, name the skill `WhimsicalCode/skills/<name>`. With
+  `--prompt "<what a user would ask>"`, the agent runs on its own and the script reports
+  its answer, how long it took and anything it wasn't allowed to do.
 - Say in the pull request which agents and models you tried it with.
 
 ## Adding a skill
