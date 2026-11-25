@@ -1,0 +1,161 @@
+{
+ "tasks": {
+  "g": {
+   "title": "Buy guanciale",
+   "status": "done"
+  },
+  "p": {
+   "title": "Buy pecorino romano",
+   "status": "done"
+  },
+  "e": {
+   "title": "Buy eggs",
+   "status": "done"
+  },
+  "spag": {
+   "title": "Buy spaghetti",
+   "status": "todo"
+  },
+  "w": {
+   "title": "Bring a big pot of water to a boil",
+   "status": "doing"
+  },
+  "warm": {
+   "title": "Warm the plates",
+   "status": "todo"
+  },
+  "cut": {
+   "title": "Cut the guanciale into strips",
+   "status": "todo"
+  },
+  "grate": {
+   "title": "Grate the pecorino",
+   "status": "todo"
+  },
+  "yolk": {
+   "title": "Separate the egg yolks",
+   "status": "todo"
+  },
+  "pepper": {
+   "title": "Toast and crack black pepper",
+   "status": "todo"
+  },
+  "salt": {
+   "title": "Salt the water",
+   "status": "todo"
+  },
+  "render": {
+   "title": "Render the guanciale in a cold pan",
+   "status": "todo"
+  },
+  "cream": {
+   "title": "Whisk yolks, pecorino and pepper into a cream",
+   "status": "todo"
+  },
+  "cook": {
+   "title": "Cook the spaghetti al dente",
+   "status": "todo"
+  },
+  "save": {
+   "title": "Save a cup of pasta water",
+   "status": "todo"
+  },
+  "toss": {
+   "title": "Toss the spaghetti with the guanciale, off the heat",
+   "status": "todo"
+  },
+  "stir": {
+   "title": "Stir in the egg cream with pasta water",
+   "status": "todo"
+  },
+  "plate": {
+   "title": "Plate it, top with pecorino and pepper",
+   "status": "todo"
+  }
+ },
+ "groups": {
+  "shop": {
+   "label": "Shopping",
+   "tasks": [
+    "g",
+    "p",
+    "e",
+    "spag"
+   ]
+  },
+  "sauce": {
+   "label": "Sauce prep",
+   "tasks": [
+    "grate",
+    "yolk",
+    "pepper"
+   ]
+  }
+ },
+ "edges": [
+  [
+   "g",
+   "cut"
+  ],
+  [
+   "p",
+   "grate"
+  ],
+  [
+   "e",
+   "yolk"
+  ],
+  [
+   "spag",
+   "cook"
+  ],
+  [
+   "w",
+   "salt"
+  ],
+  [
+   "salt",
+   "cook"
+  ],
+  [
+   "cut",
+   "render"
+  ],
+  [
+   "sauce",
+   "cream"
+  ],
+  [
+   "cook",
+   "save"
+  ],
+  [
+   "cook",
+   "toss"
+  ],
+  [
+   "render",
+   "toss"
+  ],
+  [
+   "toss",
+   "stir"
+  ],
+  [
+   "cream",
+   "stir"
+  ],
+  [
+   "save",
+   "stir"
+  ],
+  [
+   "stir",
+   "plate"
+  ],
+  [
+   "warm",
+   "plate"
+  ]
+ ]
+}
