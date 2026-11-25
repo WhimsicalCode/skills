@@ -55,6 +55,29 @@
       "license": "MIT",
       "keywords": ["renewals", "contract-renewal", "customer-renewal", "subscription", "negotiation", "customer-success", "account-management", "sales", "crm", "nrr", "timeline", "whimsical", "mcp"],
       "category": "productivity"
+    },
+    {
+      "name": "website-sitemap",
+      "version": "0.1.0",
+      "description": "Draw any website's sitemap in Whimsical, as a mind map or a flowchart of section tables, from its sitemap.xml: main pages and sections first, repeated pages grouped and the rest counted, so even big sites fit on one board.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/website-sitemap"],
+      "mcpServers": {
+        "whimsical": {
+          "type": "http",
+          "url": "https://mcp.whimsical.com/mcp"
+        }
+      },
+      "author": {
+        "name": "Whimsical",
+        "url": "https://whimsical.com"
+      },
+      "homepage": "https://github.com/WhimsicalCode/skills/blob/main/docs/website-sitemap.md",
+      "repository": "https://github.com/WhimsicalCode/skills",
+      "license": "MIT",
+      "keywords": ["sitemap", "site-map", "information-architecture", "website", "seo", "web-design", "mind-map", "flowchart", "whimsical", "mcp"],
+      "category": "design"
     }
   ]
 }
