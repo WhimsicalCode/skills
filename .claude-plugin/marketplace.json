@@ -58,7 +58,7 @@
     },
     {
       "name": "website-sitemap",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "description": "Draw any website's sitemap in Whimsical, as a mind map or a flowchart of section tables, from its sitemap.xml: main pages and sections first, repeated pages grouped and the rest counted, so even big sites fit on one board.",
       "source": "./",
       "strict": false,

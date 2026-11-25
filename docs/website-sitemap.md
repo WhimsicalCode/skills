@@ -10,7 +10,7 @@ for planning a build.
 Make a sitemap of acme.com
 ```
 
-![The whimsical.com sitemap as a Whimsical mind map: the site in the middle, its sections and main pages around it, the public boards and release notes grouped, long lists ending with a count of the other pages](website-sitemap.png)
+![The whimsical.com sitemap as a Whimsical mind map: the site in the middle, its sections and main pages around it, the public boards, release notes and other long lists collapsed with a count of their pages](website-sitemap.png)
 
 Your agent reads the site's sitemap, and every sitemap nested in it, and asks which diagram you
 want. Then it draws the site on a new board, top down: its main pages and sections first,
@@ -53,10 +53,27 @@ The skill builds the full tree of pages, then:
    pages that read like main pages. The rest become one node, "and 354 other pages". When a
    level doesn't fit, sections share the room by size, so big ones show more and small ones
    still show some.
+3. **Starts long lists collapsed** in the mind map. A node listing more than 8 pages, like a
+   blog or a list of templates, opens on a click; sections that hold other sections stay open,
+   so the board opens on the site's structure.
 
 Nothing disappears without being counted: the text above the drawing says how many of the
 sitemap's pages are drawn. To see what's counted in a section, ask for that section on its own
 ("Draw just the /blog section"), with longer lists if you like.
+
+### Draw more or less
+
+The defaults fit most sites. Ask for other sizes in plain words, and the agent sets them:
+
+| | Default | You can ask for | For example |
+|---|---|---|---|
+| Nodes in the whole diagram | 1,000 | 2 to 2,000 in a mind map, up to 1,000 in a flowchart | "300 nodes at most" |
+| Entries under one node, before "and N other pages" | 30 | 1 to 199 | "up to 60 pages per section" |
+| Mind map lists that start collapsed | more than 8 pages | any size, or none | "keep every branch open" |
+
+The highest values are what the Whimsical MCP takes in one go: 2,000 nodes in a mind map,
+1,000 in a flowchart, and 200 rows in a flowchart's table. Bigger diagrams take longer to draw
+and to open.
 
 ## What it needs from the site
 
@@ -142,6 +159,8 @@ Make a sitemap of acme.com
 Draw the site structure of https://www.globex.com as a flowchart
 Mind map the sitemap of initech.com, in German
 Draw just the /blog section of acme.com's sitemap
+Make a sitemap of acme.com with up to 60 pages per section
+Make a quick sitemap of acme.com, 200 nodes at most
 ```
 
 The agent asks which diagram you want unless you say. It will probably ask permission for
@@ -172,7 +191,7 @@ sitemap again unless you ask for fresh data.
    6,000 tokens.
 3. The agent fixes labels, creates the board and passes the text to the Whimsical MCP as is.
    Whimsical lays the diagram out. The agent then spreads the mind map's branches on both
-   sides, adds the text about the run and checks a snapshot.
+   sides, collapses its long lists, adds the text about the run and checks a snapshot.
 
 The script uses only Python's standard library and never calls Whimsical.
 

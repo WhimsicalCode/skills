@@ -475,6 +475,35 @@ def test_numbered_pages_sort_as_numbers():
     assert [n.segment for n in sitemap.ordered(jobs, {}, "Acme")] == ["1", "2", "10", "21", "apply"]
 
 
+def test_crowded_lists_start_collapsed_and_sections_stay_open():
+    urls = [f"{SITE}/blog/post-{i:02d}" for i in range(12)]
+    urls += [f"{SITE}/docs/{name}/{p}" for name in ("api", "cli", "sdk") for p in range(10)]
+    urls += [f"{SITE}/company/{p}" for p in ("careers", "contact", "press")]
+    root = tree(urls)
+    sitemap.layout(root)
+    lines = sitemap.mindmap(root, {}, "Acme").splitlines()
+    shut = sitemap.collapsed_lines(root, {}, "Acme", 8)
+    names = [lines[n - 1].strip("- ") for n in shut]
+    assert names == ["API", "Cli", "SDK", "Blog"]
+    assert "Docs" not in names and "Company" not in names and "Acme" not in names
+    assert sitemap.collapsed_lines(root, {}, "Acme", 0) == []
+
+
+def test_collapsed_lines_are_the_mind_maps_line_numbers():
+    root = tree(acme(blog=20, docs=(12,)))
+    sitemap.layout(root)
+    lines = sitemap.mindmap(root, {}, "Acme").splitlines()
+    for n in sitemap.collapsed_lines(root, {}, "Acme", 8):
+        node = [nd for nd, _ in sitemap.outline(root, {}, "Acme")][n - 1]
+        assert lines[n - 1].strip().lstrip("- ") == sitemap.label(node, {}, "Acme")
+
+
+def test_a_collapsed_list_counts_as_one_row_for_the_sides():
+    root = tree(acme(blog=30, docs=(5, 5, 5, 5)))
+    sitemap.layout(root)
+    assert sitemap.left_branches(root, {}, "Acme") != sitemap.left_branches(root, {}, "Acme", 8)
+
+
 def test_ranges():
     assert sitemap.ranges([1, 2, 3, 5, 7, 8]) == "1 to 3, 5, 7, 8"
     assert sitemap.ranges([4]) == "4"
@@ -517,6 +546,7 @@ def test_draw_writes_both_diagrams(tmp_path):
     assert "1,504 pages, 34 of them drawn, in 35 nodes (limit 1,000)." in out
     assert "  - and 1,470 other pages\n" in (folder / "mindmap.md").read_text()
     assert "warning: labels.json names /nope" in out
+    assert "Mind map collapsed: nodes 2 (1 of 35" in out
 
 
 def test_draw_prints_the_flowchart_root_link(tmp_path):
@@ -566,6 +596,9 @@ def test_note_needs_a_fetch_and_a_draw(tmp_path):
 
 def test_draw_options_are_checked(tmp_path):
     folder = saved_site(tmp_path, acme(blog=5))
+    result = run_script("draw", folder, "--type", "both", "--limit", "1500", cwd=tmp_path, check=False)
+    assert result.returncode == 1 and "a flowchart takes at most 1,000 nodes" in result.stderr
+    assert run_script("draw", folder, "--type", "mindmap", "--limit", "1500", cwd=tmp_path).returncode == 0
     result = run_script("draw", folder, "--type", "mindmap", "--per-level", "250", cwd=tmp_path, check=False)
     assert result.returncode == 1 and "--per-level must be between 1 and 199" in result.stderr
     out = run_script("draw", folder, "--type", "mindmap", "--per-level", "2", cwd=tmp_path).stdout
