@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "app-wireframe",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "description": "Turn any app into editable Whimsical wireframes: name an app to pull its screens from Mobbin, or bring your own screenshots.",
       "source": "./",
       "strict": false,

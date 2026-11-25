@@ -7,8 +7,8 @@ snippet below passes `WF check`. Read this before the first draft of a run.
 
 - Frame `iphone-14`: 432×892 with status bar, bezel and home indicator drawn
   for you. Your root `div` fills a **392×792** content area that starts 80px
-  below the frame top. Nothing clips: anything wider than 392 or taller than 792
-  is drawn over the bezel or off the phone. Budget heights before drafting.
+  below the frame top. A layout that doesn't fit the 392×792 content area is
+  refused before anything is saved. Budget heights before drafting.
 - 1 frame px ≈ 1 iOS point. For a source screenshot `W` px wide:
   `scale = 392 / W` (0.333 for 1179px, 0.304 for 1290px). A source element at
   `(x, y)` px lands at `(x·scale, y·scale - 54)` in the content area (54 ≈ the
@@ -19,16 +19,16 @@ snippet below passes `WF check`. Read this before the first draft of a run.
 
 ## Draft format
 
-A draft is the hiccup JSON the MCP accepts, plus two draft-only keys that
-`WF prepare` strips before rendering:
+A draft is exactly the hiccup JSON the MCP accepts; `WF prepare` passes it
+through unchanged.
 
-- `"wf/group": "card-1"` on a `div`: after rendering, every element inside it is
-  grouped into one Whimsical group, so people can move the card as a unit. Use it
-  for things a person would drag as one piece: cards, list rows, buttons with
-  their icon, search bars, nav bars, headers, sheets, floating controls. One
-  level only (no `wf/group` inside another), unique names, at least 2 elements.
-- `"wf/color": "green"` on an `icon`: applied after rendering, because outline
-  icons don't take `color` when created.
+- `"group": true` on a `div`: the MCP groups the elements inside it as it
+  renders, so people can move the card as a unit. Use it for things a person
+  would drag as one piece: cards, list rows, buttons with their icon, search
+  bars, nav bars, headers, sheets, floating controls. Groups can nest. A group
+  needs at least 2 elements. It stacks where its elements are, so floating
+  controls stay on top.
+- Outline icons take `color` directly.
 
 **Keep drafts compact.** Build them with a script from shared component
 functions, and keep the output to one element per line. `padding` and `margin`
@@ -38,7 +38,7 @@ rather than rewriting it.
 
 ```json
 ["div", {"layout/style": {"flex-direction": "column", "gap": 12, "padding": {"top": 8, "left": 16, "right": 16}}},
-  ["text", {"text": "**Featured**", "font-size": "l0", "text-align": "left", "layout/style": {"height": 28}}]]
+  ["text", {"text": "**Featured**", "font-size": "l0"}]]
 ```
 
 ## Rules the checker enforces (and why)
@@ -46,23 +46,23 @@ rather than rewriting it.
 | Rule | Why |
 | --- | --- |
 | Every `div` sets `flex-direction`. | Removes ambiguity; the default is column. |
-| Every `text` has `text-align` and `layout/style.height` = lines × line height (xs 16, s 20, m 24, l0 28, l1 36, l2 48). | Wireframe text is centered by default, and text without a height can take extra space in rows, pushing everything below it down. |
-| Text inside a row has `width` or `flex: 1`. | Keeps its width predictable instead of a 200 px default. |
-| No `margin` on `div`s. Use padding on the parent, or margin on a leaf. | Containers don't take margin. |
+| Only nested `div`s take `margin`. | The root has no parent to measure a margin against. |
 | No children on `w-shape` (or any element). | Only `div`s nest; use the layering pattern below. |
-| Outline icons are `icon` with `deco: "outline"`, explicit width/height, no `color`. | `w-icon` draws filled glyphs; `icon` defaults to 96 px and takes its color after rendering. |
-| `items` are plain strings. | Objects end up as label text. |
-| After a closing `**` or `~~`, write `\u00a0` (non-breaking space) instead of a space. | A plain space right after the marker isn't rendered ("gone.This"). |
+| Outline icons are `icon` with `deco: "outline"` and explicit width/height. | `w-icon` draws filled glyphs; `icon` defaults to 96 px. |
+| `items` are plain strings, except tab items. | Other elements refuse objects. Tabs take `{text, icon-name, selected}`. |
+| A `"group": true` div holds at least 2 elements. | The MCP refuses smaller groups. |
 | `w-toggle` always has `state`. | Its default looks switched on. |
-| Icon names exist in the icon set and aren't misleading (`plus`, `minus`, `phone`, `search`, `star`...). | Unknown names are replaced by the closest-spelled icon, and some common words name a different icon than you'd expect. |
+| Icon names exist in the icon set and aren't misleading (`phone`, `shield-check`, `share`, `star`). | The MCP refuses names it can't match clearly, and a few words name a different icon than you'd expect. |
 
-It also warns about bordered image placeholders and outlined cards (see Style).
+It also warns about bordered image placeholders, outlined cards and text with an
+explicit height (see Style).
 
-Font sizes in px: xs 13, s 15, m 18, l0 21, l1 27, l2 36. Average glyph width is
-about 0.55 × size, so `m` fits roughly 38 characters per 392px line. Every text
-box adds **8px of padding on each side**: two texts in a row look 16px further
-apart than their `gap`. Truncate or wrap deliberately and set the height for the
-lines you expect.
+Text is measured by the renderer: leave out its height and let it wrap. An
+explicit text height must match the measured height exactly, or the render is
+refused. Text is left-aligned by default and keeps its natural width, up to the
+space available. Font sizes in px: xs 13, s 15, m 18, l0 21, l1 27, l2 36.
+Average glyph width is about 0.55 × size, so `m` fits roughly 38 characters per
+392px line.
 
 ## Elements and the props they take
 
@@ -70,7 +70,7 @@ lines you expect.
 | --- | --- | --- |
 | `text` | text, font-size, color, text-align | Markdown `**bold**`, `~~strike~~`. One color per text. |
 | `w-shape` | color, deco (fill/outline/dashes), shape-type (rect/ellipse/pill), icon-name | Surfaces, image placeholders, circles. `icon-name` draws a centered icon. |
-| `icon` | icon-name, deco | Outline icon. Color via `wf/color`. |
+| `icon` | icon-name, deco, color | Outline icon. |
 | `w-icon` | icon-name, color | Filled glyph. Use for filled/active states (active tab, filled heart). |
 | `w-button` / `w-link` | text, color, deco (fill/outline/underline), size, state, icon-name, icon-placement, text-align | `align-self: stretch` for full width. Size `m` ≈ 40px tall, `l0` ≈ 48px. |
 | `w-tag` | text, color, deco, size, icon-name, icon-placement | Badges, plates, chips that aren't buttons. Pill-shaped. |
@@ -83,7 +83,7 @@ lines you expect.
 | `w-divider` | color, deco | Full-width 1px line; `light-gray` for list hairlines. |
 | `w-pattern` | color | Map texture. |
 | `w-overlay` | color | Translucent dim layer: what's underneath stays visible, darkened. Modal backdrops. |
-| `w-h-tabs` | items | No icons, no selected tab: avoid; build tabs by hand. |
+| `w-h-tabs` | items, icon-placement | Items are labels or `{text, icon-name, selected}`; the first tab is selected unless one says `selected: true`. |
 | `link` | text, url | Board link with icon. |
 
 There is no `w-image`, `w-map` or `w-avatar`; use the patterns below.
@@ -109,8 +109,6 @@ use `w-button`/`w-tag` when you need a solid accent.
   `color: "light-gray"`, `size: "m"`, optional `icon-name`) or a layered
   `light-gray` pill shape with a centered label. Dark selected chips and dark
   buttons: `w-button`, `deco: "fill"`, `color: "default"`.
-- **Buttons with an icon render wider than the layout expects**: give them an
-  explicit `width`, or neighbours overlap.
 - **Cards are filled, never outlined.** A white card with a hairline border in
   the source becomes a `light-gray` filled surface (or white on a light-gray
   page). Outlines are only for inputs, outlined buttons, chips and search bars.
@@ -125,13 +123,13 @@ The background is a leaf with `margin-bottom: -height`; the content follows and
 draws over it. Give both the same height.
 
 ```json
-["div", {"layout/style": {"flex-direction": "column"}, "wf/group": "promo"},
+["div", {"layout/style": {"flex-direction": "column"}, "group": true},
   ["w-shape", {"color": "light-gray", "deco": "fill", "layout/style": {"height": 56, "margin": {"bottom": -56}}}],
   ["div", {"layout/style": {"flex-direction": "row", "gap": 14, "height": 56, "align-items": "center", "padding": {"left": 16, "right": 16}}},
     ["icon", {"icon-name": "tag", "deco": "outline", "layout/style": {"width": 28, "height": 28}}],
     ["div", {"layout/style": {"flex-direction": "column", "flex": 1}},
-      ["text", {"text": "**20% off this item in cart**", "font-size": "m", "text-align": "left", "layout/style": {"height": 24}}],
-      ["text", {"text": "Applied at checkout. Ends Aug 4", "font-size": "s", "text-align": "left", "layout/style": {"height": 20}}]]]]
+      ["text", {"text": "**20% off this item in cart**", "font-size": "m"}],
+      ["text", {"text": "Applied at checkout. Ends Aug 4", "font-size": "s"}]]]]
 ```
 
 A small illustration inside a banner (a tag, a box, a gift) is better drawn as
@@ -143,7 +141,7 @@ Card surface, then the image placeholder (also pulled up), then an overlay
 column the image's height with rows for the corners, then the copy.
 
 ```json
-["div", {"layout/style": {"flex-direction": "column", "width": 280, "flex-shrink": 0}, "wf/group": "card-1"},
+["div", {"layout/style": {"flex-direction": "column", "width": 280, "flex-shrink": 0}, "group": true},
   ["w-shape", {"color": "white", "deco": "fill", "layout/style": {"width": 280, "height": 224, "margin": {"bottom": -224}}}],
   ["w-shape", {"color": "light-gray", "deco": "fill", "icon-name": "image", "layout/style": {"width": 280, "height": 136, "margin": {"bottom": -136}}}],
   ["div", {"layout/style": {"flex-direction": "column", "justify-content": "space-between", "height": 136}},
@@ -153,11 +151,11 @@ column the image's height with rows for the corners, then the copy.
     ["div", {"layout/style": {"flex-direction": "row", "justify-content": "flex-end", "padding": {"right": 12, "bottom": 12}}},
       ["w-tag", {"text": "10 min", "color": "white", "deco": "fill", "size": "s"}]]],
   ["div", {"layout/style": {"flex-direction": "column", "gap": 2, "padding": 12}},
-    ["text", {"text": "**Restaurant name**", "font-size": "m", "text-align": "left", "layout/style": {"height": 24}}],
+    ["text", {"text": "**Restaurant name**", "font-size": "m"}],
     ["div", {"layout/style": {"flex-direction": "row", "gap": 4}},
-      ["text", {"text": "★ 4.5 Excellent", "font-size": "s", "color": "dark-green", "text-align": "left", "layout/style": {"width": 118, "height": 20}}],
-      ["text", {"text": "(500+) · 0.2 mi", "font-size": "s", "color": "silver", "text-align": "left", "layout/style": {"flex": 1, "height": 20}}]],
-    ["text", {"text": "~~£2.49~~\u00a0£0 delivery fee", "font-size": "s", "color": "red", "text-align": "left", "layout/style": {"height": 20}}]]]
+      ["text", {"text": "★ 4.5 Excellent", "font-size": "s", "color": "dark-green", "layout/style": {"width": 118}}],
+      ["text", {"text": "(500+) · 0.2 mi", "font-size": "s", "color": "silver", "layout/style": {"flex": 1}}]],
+    ["text", {"text": "~~£2.49~~ £0 delivery fee", "font-size": "s", "color": "red"}]]]
 ```
 
 A horizontal carousel is a row with `padding-left` 16 and `gap` 8 holding full
@@ -173,25 +171,24 @@ and carousel cards keep their source weight (usually bold or medium).
 ### Circular icon button
 
 ```json
-["div", {"layout/style": {"flex-direction": "column", "width": 40, "height": 40}, "wf/group": "basket-button"},
+["div", {"layout/style": {"flex-direction": "column", "width": 40, "height": 40}, "group": true},
   ["w-shape", {"shape-type": "ellipse", "deco": "fill", "color": "light-gray", "layout/style": {"width": 40, "height": 40, "margin": {"bottom": -40}}}],
   ["div", {"layout/style": {"flex-direction": "row", "justify-content": "center", "align-items": "center", "height": 40}},
-    ["icon", {"icon-name": "basket", "deco": "outline", "wf/color": "green", "layout/style": {"width": 22, "height": 22}}]]]
+    ["icon", {"icon-name": "basket", "deco": "outline", "color": "green", "layout/style": {"width": 22, "height": 22}}]]]
 ```
 
 On a light-gray surface use a `white` fill. Outline the circle only when the
 source shows a border and the button floats over white. A dark filled action in the source (dark cart button on a product tile) stays
-dark: `"color": "default", "deco": "fill"` with a `white`-colored icon via
-`wf/color`.
+dark: `"color": "default", "deco": "fill"` with a `white`-colored icon.
 
 ### Search bar
 
 ```json
-["div", {"layout/style": {"flex-direction": "column"}, "wf/group": "search"},
+["div", {"layout/style": {"flex-direction": "column"}, "group": true},
   ["w-shape", {"shape-type": "pill", "deco": "fill", "color": "light-gray", "layout/style": {"height": 48, "margin": {"bottom": -48}}}],
   ["div", {"layout/style": {"flex-direction": "row", "align-items": "center", "gap": 10, "height": 48, "padding": {"left": 16, "right": 16}}},
     ["icon", {"icon-name": "zoom-2", "deco": "outline", "layout/style": {"width": 20, "height": 20}}],
-    ["text", {"text": "Restaurants, groceries, dishes", "font-size": "m", "color": "silver", "text-align": "left", "layout/style": {"flex": 1, "height": 24}}]]]
+    ["text", {"text": "Restaurants, groceries, dishes", "font-size": "m", "color": "silver", "layout/style": {"flex": 1}}]]]
 ```
 
 Use an outlined white pill only when the source search bar is white with a
@@ -200,13 +197,12 @@ visible border. A plain form field: `w-input` with `label` and placeholder `text
 ### Two-tone lines ("Save $10 on orders over $35")
 
 One `text` has one color. When part of a line is accented, make that part a
-`w-tag` (when the source shows a pill) or a separate text, and pull the second
-text back by its padding with `margin: {"left": -12}`.
+`w-tag` (when the source shows a pill) or a separate text.
 
 ```json
 ["div", {"layout/style": {"flex-direction": "row", "align-items": "center", "gap": 4}},
   ["w-tag", {"text": "Save $10", "color": "whimsy-blue", "deco": "fill", "size": "s"}],
-  ["text", {"text": "on orders over $35", "font-size": "m", "color": "silver", "text-align": "left", "layout/style": {"flex": 1, "height": 24}}]]
+  ["text", {"text": "on orders over $35", "font-size": "m", "color": "silver", "layout/style": {"flex": 1}}]]
 ```
 
 ### Category tabs with icons and a selected underline
@@ -215,14 +211,14 @@ Fixed-width columns so labels center; the selected tab gets a bold label, an
 accent icon and a 3px accent bar drawn over the divider.
 
 ```json
-["div", {"layout/style": {"flex-direction": "column"}, "wf/group": "category-tabs"},
+["div", {"layout/style": {"flex-direction": "column"}, "group": true},
   ["div", {"layout/style": {"flex-direction": "row", "padding": {"top": 12, "bottom": 8, "left": 4}}},
     ["div", {"layout/style": {"flex-direction": "column", "align-items": "center", "gap": 4, "width": 64}},
-      ["icon", {"icon-name": "house", "deco": "outline", "wf/color": "green", "layout/style": {"width": 24, "height": 24}}],
-      ["text", {"text": "**Home**", "font-size": "s", "text-align": "center", "layout/style": {"width": 64, "height": 20}}]],
+      ["icon", {"icon-name": "house", "deco": "outline", "color": "green", "layout/style": {"width": 24, "height": 24}}],
+      ["text", {"text": "**Home**", "font-size": "s", "text-align": "center", "layout/style": {"width": 64}}]],
     ["div", {"layout/style": {"flex-direction": "column", "align-items": "center", "gap": 4, "width": 96}},
       ["icon", {"icon-name": "cutlery", "deco": "outline", "layout/style": {"width": 24, "height": 24}}],
-      ["text", {"text": "Restaurants", "font-size": "s", "text-align": "center", "layout/style": {"width": 96, "height": 20}}]]],
+      ["text", {"text": "Restaurants", "font-size": "s", "text-align": "center", "layout/style": {"width": 96}}]]],
   ["w-divider", {}],
   ["w-shape", {"color": "green", "deco": "fill", "layout/style": {"width": 64, "height": 3, "margin": {"top": -3}}}]]
 ```
@@ -230,7 +226,7 @@ accent icon and a 3px accent bar drawn over the divider.
 ### Bottom tab bar
 
 Same idea, five equal columns (`width` 78 or `flex: 1`), `padding-top` 8; the
-active item uses `w-icon` (filled) or `wf/color` with the accent and a bold
+active item uses `w-icon` (filled) or an accent `color` on its icon and a bold
 label. Put a `w-divider` above it. Place it last in a root column whose earlier
 content fills the remaining height (`flex: 1` on the content column) so it sits
 at the bottom.
@@ -239,14 +235,13 @@ at the bottom.
 
 Give the **last content leaf** a negative bottom margin equal to the overlap,
 then add the floating row; it draws on top. Floating surfaces are white with an
-outline so they hide what's underneath. Give floating controls a `wf/group`
-together (a floating CTA with the nav row), so grouping can't bury them (see
-"Stacking" below).
+outline so they hide what's underneath. Group floating controls together (a
+floating CTA with the nav row).
 
 ```json
 ["div", {"layout/style": {"flex-direction": "column", "gap": 14}},
-  ["text", {"text": "A long description that continues under the floating navigation.", "font-size": "m", "text-align": "left", "layout/style": {"height": 96, "margin": {"bottom": -34}}}],
-  ["div", {"layout/style": {"flex-direction": "row", "gap": 8}, "wf/group": "floating-nav"},
+  ["text", {"text": "A long description that continues under the floating navigation.", "font-size": "m", "layout/style": {"margin": {"bottom": -34}}}],
+  ["div", {"layout/style": {"flex-direction": "row", "gap": 8}, "group": true},
     ["div", {"layout/style": {"flex-direction": "column", "width": 232}},
       ["w-shape", {"shape-type": "pill", "deco": "outline", "color": "white", "layout/style": {"width": 232, "height": 56, "margin": {"bottom": -56}}}],
       ["div", {"layout/style": {"flex-direction": "row", "justify-content": "space-between", "align-items": "center", "height": 56, "padding": {"left": 28, "right": 28}}},
@@ -265,14 +260,14 @@ overlay's top margin is -792 (cover everything); its bottom margin is
 ```json
 ["div", {"layout/style": {"flex-direction": "column"}},
   ["div", {"layout/style": {"flex-direction": "column", "gap": 12, "padding": 16, "height": 792}},
-    ["w-shape", {"color": "light-gray", "deco": "fill", "icon-name": "image", "layout/style": {"height": 220}}],
-    ["text", {"text": "**Background screen**", "font-size": "l1", "text-align": "left", "layout/style": {"height": 36}}]],
+    ["w-shape", {"color": "light-gray", "deco": "fill", "icon-name": "image"}],
+    ["text", {"text": "**Background screen**", "font-size": "l1"}]],
   ["w-overlay", {"layout/style": {"height": 792, "margin": {"top": -792, "bottom": -592}}}],
-  ["div", {"layout/style": {"flex-direction": "column", "padding": {"left": 16, "right": 16}}, "wf/group": "sheet"},
+  ["div", {"layout/style": {"flex-direction": "column", "padding": {"left": 16, "right": 16}}, "group": true},
     ["w-shape", {"color": "white", "deco": "fill", "layout/style": {"height": 300, "margin": {"bottom": -300}}}],
     ["div", {"layout/style": {"flex-direction": "column", "gap": 8, "padding": 20, "height": 300}},
-      ["text", {"text": "**Sheet title**", "font-size": "l0", "text-align": "left", "layout/style": {"height": 28}}],
-      ["text", {"text": "Sheet content sits above the dim layer.", "font-size": "m", "text-align": "left", "layout/style": {"height": 24}}]]]]
+      ["text", {"text": "**Sheet title**", "font-size": "l0"}],
+      ["text", {"text": "Sheet content sits above the dim layer.", "font-size": "m"}]]]]
 ```
 
 Keep only the background elements that matter (hero image, top controls); they
@@ -344,7 +339,7 @@ handle (`w-shape` pill, light-gray, 40×5, `align-self: center`).
 ### Lists and settings rows
 
 Row: `[icon] [text flex 1] [ctrl-right icon]`, `align-items: center`, fixed
-height (48-56), `w-divider` between rows. Wrap each row in its own `wf/group`.
+height (48-56), `w-divider` between rows. Make each row its own group.
 Use `["w-divider", {"color": "light-gray"}]` for the hairlines of typical iOS
 lists. Section breaks between grouped lists: a 10px `light-gray` fill shape
 across the full width (root padding 0).
@@ -359,49 +354,39 @@ WF icon "share" "notification bell" "external link"
 ```
 
 Every name it returns exists in Whimsical's icon set, and the checker rejects
-names that don't (they'd be replaced by the closest-spelled icon). Each result has
+names that don't. Each result has
 `looks_like` (what it draws), `concepts`, `checked_outline` (verified as an outline
 icon) and `avoid` (a misleading name). Pick a `checked_outline` name when one
 matches. Render a swatch only for names that aren't verified, once per app.
 
-When a swatch or render response says `Auto-corrected icon name(s)`, the frame
-shows the **corrected** icon while the swatch label still shows the name you
-asked for. Treat the corrected name as what you got, and only keep names that
-weren't corrected. Record names you checked by eye with `WF icons <run> name...`.
+The MCP draws the usual UI glyph for common words (`plus`, `minus`, `close`,
+`x`, `search`, `heart`, `home`, `user`, `chevron-*`, `hamburger`, `bell`) and
+refuses a name it can't match clearly, with suggestions. When a response says
+`Auto-corrected icon name(s)`, the frame shows the **corrected** icon while a
+swatch label still shows the name you asked for: treat the corrected name as
+what you got. Record names you checked by eye with `WF icons <run> name...`.
 
-Misleading names: `plus` (a Google+ logo; use `e-add`), `minus` (use `e-delete`),
-`phone` (a mobile phone; use `phone-2`), `search` (a magnifier in a box; use
-`zoom-2`), `shield-check` (a cloud vendor logo; use `shield`), `star` (a star in a
-box; write ratings as text: `★ 4.9`), `share` for the iOS share icon (use `upload`).
+Misleading names: `phone` (a mobile phone; use `phone-2`), `shield-check` (a
+cloud vendor logo; use `shield`), `star` (a star in a box; write ratings as
+text: `★ 4.9`), `share` for the iOS share icon (use `upload`).
 
 ## Stacking and grouping
 
 - Within a render, later siblings draw on top.
-- A new group is drawn **above every ungrouped element**, in creation order.
-  `WF postpass` creates groups in draft order and moves any ungrouped element
-  that floats over grouped content into a later group (and tells you). Better:
-  give floating elements a `wf/group` yourself.
-- Board snapshots lag edits by ~10-15 s. Wait before the final look after the
-  grouping, or a missing element won't show.
+- A `"group": true` group is drawn where its first element is, so grouping
+  doesn't change what's on top.
 
 ## Whimsical MCP behaviors to plan around
 
-- `add_board_content` returns the frame's box but **not its ID**. Find it with
-  `fetch {select_kinds: ["frame"]}` and the exact title.
-- Reads can lag a write by several seconds (more on big boards). An empty or
-  short result right after rendering means *wait and read again*, never *render
-  again*.
+- `add_board_content` replies with `Frame: <id>`: that's the frame ID.
 - `fetch {scope: <frame id>, detail: "detailed", limit: 200}` lists a frame's
-  elements with positions, in **reverse draft order**; `WF postpass` relies on
-  both.
-- `fetch {image: true, crop_ids: [<frame id>]}` is the reliable snapshot.
-  Viewport snapshots sometimes drop elements.
+  elements with positions, in reading order (top to bottom, then left to right).
+- `fetch {image: true, crop_ids: [<frame id>]}` snapshots one frame.
 - `wireframe_edit` with `layout` replaces all of a frame's elements (and their
   groups) and keeps the frame ID; `WF prepare` prints this call once a screen has
   a frame. For one-property fixes (a color, a label, a state), use operations
   mode (`operations: [{op: "update", id, ...}]`): a fraction of a full layout.
-- The MCP reports one validation error per call: run the checker first.
-- `edit` → `group` needs at least 2 elements and can't reference a group made in
-  the same call; that's why groups are one level.
+- A layout reports one validation error per call: run the checker first. `edit`
+  reports every refused operation at once.
 - `edit` → `add` `type: "link"` with `url`, `text`, `x`, `y` (top-left) makes a
   native link.
