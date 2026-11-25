@@ -1,0 +1,58 @@
+<svg viewBox="0 0 720 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Input: a sitemap index behind the sitemap file it points to, its entries indented like XML. -->
+  <rect x="56" y="74" width="200" height="300" rx="12" fill="#f6f4f8" stroke="#e1dce5" stroke-width="2"/>
+  <rect x="76" y="98" width="80" height="8" rx="4" fill="#e1dce5"/>
+  <rect x="96" y="118" width="110" height="8" rx="4" fill="#e1dce5"/>
+
+  <rect x="92" y="138" width="200" height="300" rx="12" fill="#8bbbff" stroke="#5a9eff" stroke-width="2"/>
+  <rect x="112" y="162" width="96" height="12" rx="6" fill="#fbfafc"/>
+  <g fill="#d6e7ff">
+    <rect x="132" y="190" width="70" height="8" rx="4"/>
+    <rect x="132" y="262" width="70" height="8" rx="4"/>
+    <rect x="132" y="334" width="70" height="8" rx="4"/>
+  </g>
+  <g fill="#fbfafc">
+    <rect x="152" y="208" width="116" height="8" rx="4"/>
+    <rect x="152" y="226" width="90" height="8" rx="4"/>
+    <rect x="152" y="280" width="104" height="8" rx="4"/>
+    <rect x="152" y="298" width="116" height="8" rx="4"/>
+    <rect x="152" y="352" width="84" height="8" rx="4"/>
+    <rect x="152" y="370" width="108" height="8" rx="4"/>
+  </g>
+  <rect x="112" y="402" width="96" height="12" rx="6" fill="#fbfafc"/>
+
+  <!-- The arrow, as on the site's other cards. -->
+  <path d="M322 260H392" stroke="#b8b0bc" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M392 254L401 260L392 266Z" fill="#b8b0bc"/>
+
+  <!-- Output: a Whimsical mind map, the site in the middle and its sections on both sides. -->
+  <g stroke="#cf8bff" stroke-width="2">
+    <path d="M504 260C488 260 488 156 472 156"/>
+    <path d="M504 260H472"/>
+    <path d="M504 260C488 260 488 364 472 364"/>
+    <path d="M600 260C616 260 616 140 632 140"/>
+    <path d="M600 260C616 260 616 220 632 220"/>
+    <path d="M600 260C616 260 616 300 632 300"/>
+    <path d="M600 260C616 260 616 380 632 380"/>
+  </g>
+  <g fill="#efd9ff" stroke="#cf8bff" stroke-width="2">
+    <rect x="420" y="140" width="52" height="32" rx="8"/>
+    <rect x="420" y="244" width="52" height="32" rx="8"/>
+    <rect x="420" y="348" width="52" height="32" rx="8"/>
+    <rect x="632" y="124" width="52" height="32" rx="8"/>
+    <rect x="632" y="204" width="52" height="32" rx="8"/>
+    <rect x="632" y="284" width="52" height="32" rx="8"/>
+    <rect x="632" y="364" width="52" height="32" rx="8"/>
+  </g>
+  <g fill="#cf8bff">
+    <rect x="430" y="152" width="32" height="8" rx="4"/>
+    <rect x="430" y="256" width="28" height="8" rx="4"/>
+    <rect x="430" y="360" width="32" height="8" rx="4"/>
+    <rect x="642" y="136" width="30" height="8" rx="4"/>
+    <rect x="642" y="216" width="32" height="8" rx="4"/>
+    <rect x="642" y="296" width="26" height="8" rx="4"/>
+    <rect x="642" y="376" width="32" height="8" rx="4"/>
+  </g>
+  <rect x="504" y="236" width="96" height="48" rx="12" fill="#9e39e5" stroke="#731bb2" stroke-width="2"/>
+  <rect x="522" y="254" width="60" height="12" rx="6" fill="#fbfafc"/>
+</svg>
