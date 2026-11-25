@@ -382,8 +382,8 @@ class Grid:
     "layers" places cards the way Graphviz does: first an order in each column that crosses as
     few arrows as it can, then rows, keeping that order, that line up as many arrows as it can.
     "tracks" works the other way round: first the most arrows that can be straight at once, as
-    tracks of cards in one row, then the tracks stacked to cross little. Which wins depends on
-    the tree, so the layout tries both."""
+    tracks of cards in one row, then the tracks stacked to cross little. Layers is quicker and
+    usually wins; the layout tries tracks too when layers leaves an arrow in trouble."""
 
     def __init__(self, tree, strategy="layers"):
         self.tree = t = tree
@@ -506,23 +506,23 @@ class Grid:
             for sb in self.side_slots(b, i):
                 pb, rb = self.side(b, "left", sb)
                 if abs(pa[1] - pb[1]) < 0.5:                 # a line: straight on
-                    out.append((0, ra, rb, [pa, pb], [(a, "right", sa), (b, "left", sb)]))
+                    out.append(route(0, ra, rb, [pa, pb], [(a, "right", sa), (b, "left", sb)]))
                 else:                                        # a Z, bending halfway across
                     xm = (pa[0] + pb[0]) / 2
-                    out.append((2, ra, rb, [pa, (xm, pa[1]), (xm, pb[1]), pb],
-                                [(a, "right", sa), (b, "left", sb)]))
+                    out.append(route(2, ra, rb, [pa, (xm, pa[1]), (xm, pb[1]), pb],
+                                     [(a, "right", sa), (b, "left", sb)]))
             end = "top" if pa[1] < by else "bottom" if pa[1] > by + bh else None
             for sb in END_SLOTS if end else ():              # out of the side, down or up into b
                 pb, rb = self.side(b, end, sb)
                 if pa[0] < pb[0]:
-                    out.append((1, ra, rb, [pa, (pb[0], pa[1]), pb], [(a, "right", sa), (b, end, sb)]))
+                    out.append(route(1, ra, rb, [pa, (pb[0], pa[1]), pb], [(a, "right", sa), (b, end, sb)]))
         for sb in self.side_slots(b, i):
             pb, rb = self.side(b, "left", sb)
             start = "bottom" if pb[1] > ay + ah else "top" if pb[1] < ay else None
             for sa in END_SLOTS if start else ():            # down or up out of a, into b's side
                 pa, ra = self.side(a, start, sa)
                 if pa[0] < pb[0]:
-                    out.append((1, ra, rb, [pa, (pa[0], pb[1]), pb], [(a, start, sa), (b, "left", sb)]))
+                    out.append(route(1, ra, rb, [pa, (pa[0], pb[1]), pb], [(a, start, sa), (b, "left", sb)]))
         for under in ("bottom", "top"):                      # a U, when nothing simpler is clear
             for sa in END_SLOTS[:3]:
                 pa, ra = self.side(a, under, sa)
@@ -531,7 +531,7 @@ class Grid:
                     if pa[0] >= pb[0]:
                         continue
                     y = max(pa[1], pb[1]) + U_DROP if under == "bottom" else min(pa[1], pb[1]) - U_DROP
-                    out.append((2, ra, rb, [pa, (pa[0], y), (pb[0], y), pb], [(a, under, sa), (b, under, sb)]))
+                    out.append(route(2, ra, rb, [pa, (pa[0], y), (pb[0], y), pb], [(a, under, sa), (b, under, sb)]))
         return out
 
     def obstacles(self, i):
@@ -545,31 +545,29 @@ class Grid:
 
     def floor(self, i, route):
         """The least route i can cost: its elbows and its length, before anything it runs into."""
-        pts = route[3]
-        length = sum(abs(x2 - x1) + abs(y2 - y1) for (x1, y1), (x2, y2) in zip(pts, pts[1:]))
         elbow = COST["elbow"] + (COST["spine"] if self.spine[i] else 0)
-        return elbow * route[0] + COST["length"] * length
+        return elbow * route[0] + COST["length"] * route[7]
 
     def route_cost(self, i, route, blocked, rects, limit=float("inf")):
-        pts = route[3]
-        segs = list(zip(pts, pts[1:]))
-        through = sum(hits(s, box) for s in segs for box in blocked)
-        if through and limit < COST["through"]:
-            return COST["through"] * through                 # it can't win: skip the rest
-        group = sum(hits(s, box) for s in segs for box in rects)
-        hops = overlaps = 0
+        """What route i would cost, given the other arrows; stops counting once it passes limit."""
+        segs, box = route[5], route[6]
+        x1, y1, x2, y2 = box
+        cost = self.floor(i, route)
+        for weight, rects_ in ((COST["through"], blocked), (COST["group"], rects)):
+            for bx, by, bw, bh in rects_:
+                if x1 <= bx + bw and bx <= x2 and y1 <= by + bh and by <= y2:
+                    for sg in segs:
+                        cost += weight * hits(sg, (bx, by, bw, bh))
+            if cost >= limit:
+                return cost
         for j, other in enumerate(self.routes):
-            if j == i or other is None:
+            if j == i or other is None or not near(box, other[6], 24):
                 continue
-            for s in segs:
-                for o in zip(other[3], other[3][1:]):
-                    hops += crosses(s, o)
-                    overlaps += overlap(s, o)
-        length = sum(abs(x2 - x1) + abs(y2 - y1) for (x1, y1), (x2, y2) in segs)
-        cost = (COST["through"] * through + COST["overlap"] * overlaps + COST["group"] * group
-                + COST["hop"] * hops + COST["elbow"] * route[0] + COST["length"] * length)
-        if self.spine[i]:
-            cost += COST["spine"] * route[0]
+            for sg in segs:
+                for o in other[5]:
+                    cost += COST["overlap"] * overlap(sg, o) + COST["hop"] * crosses(sg, o)
+            if cost >= limit:
+                return cost
         return cost
 
     def reroute(self, i):
@@ -596,10 +594,10 @@ class Grid:
         out = []
         for i, route in enumerate(self.routes):
             blocked, _ = self.obstacles(i)
-            segs = list(zip(route[3], route[3][1:]))
-            bad = any(hits(s, box) for s in segs for box in blocked)
+            segs, box = route[5], route[6]
+            bad = any(hits(s, b) for b in blocked if touches(box, b) for s in segs)
             for j, other in enumerate(self.routes):
-                if j != i and any(overlap(s, o) for s in segs for o in zip(other[3], other[3][1:])):
+                if j != i and near(box, other[6], 24) and any(overlap(s, o) for s in segs for o in other[5]):
                     bad = True
             if bad:
                 out.append(i)
@@ -613,13 +611,16 @@ class Grid:
         length = 0.0
         for i, route in enumerate(self.routes):
             blocked, rects = self.obstacles(i)
-            segs = list(zip(route[3], route[3][1:]))
-            through += sum(hits(s, box) for s in segs for box in blocked)
-            group += sum(hits(s, box) for s in segs for box in rects)
-            length += sum(abs(x2 - x1) + abs(y2 - y1) for (x1, y1), (x2, y2) in segs)
+            segs, box = route[5], route[6]
+            through += sum(hits(s, b) for b in blocked if touches(box, b) for s in segs)
+            group += sum(hits(s, b) for b in rects if touches(box, b) for s in segs)
+            length += route[7]
             for j in range(i + 1, len(self.routes)):
+                other = self.routes[j]
+                if not near(box, other[6], 24):
+                    continue
                 for s in segs:
-                    for o in zip(self.routes[j][3], self.routes[j][3][1:]):
+                    for o in other[5]:
                         hops += crosses(s, o)
                         overlaps += overlap(s, o)
         elbows = sum(r[0] for r in self.routes)
@@ -942,16 +943,18 @@ class Grid:
             for b in sorted(range(len(self.bundles)), key=lambda b: -len(self.bundles[b])):
                 if b == spine:
                     continue
+                choice = None
                 for rows in self.moves_for(b):
-                    kept = dict(self.rows)
-                    self.set_rows(rows)
+                    change = {u: rows[self.track_of[("card", self.cards[u][0])]] for u in self.units}
+                    change = {u: h for u, h in change.items() if h != self.h[u]}
+                    score = self.try_change(change) if change else None
+                    if score is not None and score < best - 1e-6:
+                        best, choice = score, rows
+                if choice:
+                    self.set_rows(choice)
                     self.route_all()
-                    score, _ = self.score()
-                    if score < best - 1e-6:
-                        best, improved = score, True
-                    else:
-                        self.set_rows(kept)
-                self.route_all()
+                    best, _ = self.score()
+                    improved = True
             if not improved:
                 break
 
@@ -1179,7 +1182,7 @@ class Grid:
         flagged = set(self.flagged())
         for i in sorted(range(len(self.edges)), key=lambda i: (self.spine[i], i)):
             a, b = self.edges[i]
-            _, from_rel, to_rel, _, _ = self.routes[i]
+            from_rel, to_rel = self.routes[i][1], self.routes[i][2]
             op = {"op": "add", "type": "conn", "from_id": a, "to_id": b, "from_rel": from_rel,
                   "to_rel": to_rel, "to_endpoint": "arrow"}
             if i in flagged:
@@ -1478,6 +1481,26 @@ class Layers:
         return 100 * bent + length + 0.5 * height
 
 
+def route(elbows, start, end, points, slots):
+    """A route, with its pieces, bounding box and length worked out once:
+    (elbows, from anchor, to anchor, points, slots, pieces, box, length)."""
+    xs, ys = [p[0] for p in points], [p[1] for p in points]
+    length = sum(abs(x2 - x1) + abs(y2 - y1) for (x1, y1), (x2, y2) in zip(points, points[1:]))
+    return (elbows, start, end, points, slots, tuple(zip(points, points[1:])), (min(xs), min(ys), max(xs), max(ys)),
+            length)
+
+
+def near(box, other, margin=0):
+    """Whether two routes' boxes, (x1, y1, x2, y2), come within margin of each other."""
+    return box[0] - margin <= other[2] and other[0] - margin <= box[2] and \
+        box[1] - margin <= other[3] and other[1] - margin <= box[3]
+
+
+def touches(box, rect):
+    """Whether a route's box, (x1, y1, x2, y2), meets a card's or a label's, (x, y, width, height)."""
+    return box[0] <= rect[0] + rect[2] and rect[0] <= box[2] and box[1] <= rect[1] + rect[3] and rect[1] <= box[3]
+
+
 def hits(seg, box):
     (x1, y1), (x2, y2) = seg
     bx, by, bw, bh = box
@@ -1523,10 +1546,13 @@ def inside(row, item, top, bottom):
 
 
 def layout(path, strategy=None):
-    """Lay the tree out both ways (or the one asked for) and keep the cleaner drawing."""
+    """Lay the tree out in layers (or the way asked for). If an arrow is still in trouble, try
+    tracks as well, which is slower, and keep the cleaner drawing."""
     tree = Tree(load_tree(path))
     tried = {}
     for name in [strategy] if strategy else ["layers", "tracks"]:
+        if name == "tracks" and not strategy and not tried["layers"][1].flagged():
+            break                                        # layers drew it cleanly: no need
         groups = {g: list(spec["tasks"]) for g, spec in tree.groups.items()}
         grid = Grid(tree, name)
         grid.polish()
