@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["pillow>=11,<13"]
+# dependencies = ["pillow>=13,<14"]
 # ///
 """Offline helper for building lo-fi wireframes with the Whimsical MCP.
 

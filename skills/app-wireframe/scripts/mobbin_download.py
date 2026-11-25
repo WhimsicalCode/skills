@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["httpx>=0.27,<1", "pillow>=11,<13"]
+# dependencies = ["httpx>=0.27,<1", "pillow>=13,<14"]
 # ///
 """Download the screens of a shortlist built from Mobbin MCP results, and crop Mobbin's footer.
 
