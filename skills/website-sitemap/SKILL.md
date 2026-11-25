@@ -78,9 +78,18 @@ then:
 It writes `mindmap.md` or `flowchart.mmd` in `sitemaps/<domain>/` and prints the top level with
 its labels, the collections it made, and what it counted without drawing.
 
-Keep both limits unless the user asks otherwise: `--per-level 10` for a sparser drawing (up to
-199), `--limit 300` for fewer nodes in all (up to 2,000, the most the Whimsical MCP takes in
-one diagram).
+**Sizes.** Keep the defaults unless the user asks for something else, in their words or as a
+number. Map what they ask to these options, and say in the report which ones you changed:
+
+| Option | What it sets | Default | Range |
+|---|---|---|---|
+| `--limit N` | nodes in the whole diagram ("300 nodes at most", "a quick one") | 1000 | 2 to 2,000; 1,000 with a flowchart |
+| `--per-level N` | entries under any one node before "and N other pages" ("60 pages per section") | 30 | 1 to 199 |
+| `--collapse-over N` | mind map lists of more pages than this start collapsed ("open everything": 0) | 8 | 0 or more |
+
+The Whimsical MCP takes at most 2,000 nodes in a mind map and 1,000 in a flowchart, and 200 rows
+in a table; the script refuses what it wouldn't take and says so. If the user asks for more,
+tell them the limit and draw the most it allows.
 
 **Fix the labels.** Labels come from the URLs (`/data-center` becomes "Data Center"), so check
 the top-level list the script printed. Write `sitemaps/<domain>/labels.json`, with two kinds of
@@ -128,14 +137,17 @@ returns a snapshot of it).
      `{"relative_to": <the bounding box the first reply printed>, "direction": "right"}`. Pass
      that box itself, `{"x": ..., "y": ..., "width": ..., "height": ...}`, not the mind map's
      id: the id is its root node's, and "right of" the root lands in the middle of the map.
-3. Balance the mind map. Whimsical puts every branch right of the root; the script printed
-   which top-level branches to move left ("Mind map sides: put top-level branches 2 to 4, 6 on
-   the left"). In the `add_board_content` reply, the root is the first object listed and the
-   top-level branches are the objects whose `parent` is the root's id, in order. Call `edit`
-   with one operation, `{"op": "mm_update", "id": <the root's id>, "update": [{"id": <branch
-   id>, "side": "left"}, ...]}`, one entry per branch the script named. If the reply doesn't
-   list the objects, `fetch` with `scope` set to the root's id: it shows each branch's text.
-   Skip this step for a flowchart, or when the script printed no sides.
+3. Balance and tidy the mind map, in one `edit` call. Whimsical puts every branch right of the
+   root and opens every node; the script printed which top-level branches to move left ("Mind
+   map sides: put top-level branches 2 to 4, 6 on the left") and which nodes start collapsed
+   ("Mind map collapsed: nodes 3, 35, 199"). In the `add_board_content` reply, the objects
+   come in the order of mindmap.md's lines: the first is the root (line 1), the Nth object is
+   line N. The top-level branches are the objects whose `parent` is the root's id, in order.
+   Call `edit` with one operation, `{"op": "mm_update", "id": <the root's id>, "update": [...]}`,
+   with `{"id": <branch id>, "side": "left"}` for each branch the script named and `{"id":
+   <the Nth object's id>, "collapsed": true}` for each node it named. If the reply doesn't
+   list the objects, `fetch` with `scope` set to the root's id: it lists them in the same
+   order, with their text. Skip this step for a flowchart, or when the script printed neither.
 
    For a flowchart, link its root instead: the script printed `Flowchart root: set the root
    table's header to {...}`. The root table is the topmost object in the `add_board_content`

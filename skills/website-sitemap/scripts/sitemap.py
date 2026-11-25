@@ -58,6 +58,8 @@ SKILL_URL = "https://whimsical.com/skills/website-sitemap"
 
 DEFAULT_LIMIT = 1000
 MAX_LIMIT = 2000                   # the most nodes the Whimsical MCP takes in one mind map
+MAX_FLOWCHART = 1000               # the most nodes it takes in one flowchart
+COLLAPSE_OVER = 8                  # a mind map node listing more pages than this starts collapsed
 MAX_TEXT = 102_400                 # the most characters the Whimsical MCP takes in one string
 MAX_ROWS = 200                     # the most rows the Whimsical MCP takes in one flowchart table
 PER_LEVEL = 30                     # the most children a node shows; the rest become "and N other pages"
@@ -764,19 +766,46 @@ def mindmap(root: Node, labels: dict[str, str], root_label: str, link: str | Non
     if link:
         first = f"[{first}]({link})"
     lines = [first + (f" icon-name:{icon}" if icon else "")]
-
-    def add(node: Node, depth: int) -> None:
-        for kid in ordered(node, labels, root_label):
-            lines.append("  " * depth + "- " + label(kid, labels, root_label))
-            add(kid, depth + 1)
-    add(root, 0)
+    for node, depth in outline(root, labels, root_label)[1:]:
+        lines.append("  " * (depth - 1) + "- " + label(node, labels, root_label))
     return "\n".join(lines) + "\n"
 
 
-def left_branches(root: Node, labels: dict[str, str], root_label: str) -> list[int]:
+def outline(root: Node, labels: dict[str, str], root_label: str) -> list[tuple[Node, int]]:
+    """Every node with its depth, in the order the mind map's lines list them: the root first."""
+    out = [(root, 0)]
+
+    def add(node: Node, depth: int) -> None:
+        for kid in ordered(node, labels, root_label):
+            out.append((kid, depth))
+            add(kid, depth + 1)
+    add(root, 1)
+    return out
+
+
+def crowded(node: Node, over: int) -> bool:
+    """A list worth collapsing: more than `over` children, mostly single pages, or a collection. A node
+    whose children are mostly sections stays open, so the site's structure shows."""
+    kids = list(node.children.values())
+    if node.parent is None or len(kids) <= over:
+        return False
+    return node.virtual or sum(1 for k in kids if not k.children) > len(kids) / 2
+
+
+def collapsed_lines(root: Node, labels: dict[str, str], root_label: str, over: int) -> list[int]:
+    """Which nodes of the mind map start collapsed, as line numbers of mindmap.md (the root is 1)."""
+    if over <= 0:
+        return []
+    return [i + 1 for i, (node, _) in enumerate(outline(root, labels, root_label)) if crowded(node, over)]
+
+
+def left_branches(root: Node, labels: dict[str, str], root_label: str, over: int = 0) -> list[int]:
     """Which top-level branches of the mind map to put left of the root, counted from 1 in the order
-    they come, so both sides have about as many rows. Whimsical puts them all on the right."""
+    they come, so both sides have about as many rows. Whimsical puts them all on the right. A node that
+    starts collapsed takes one row."""
     def rows(node: Node) -> int:
+        if over > 0 and crowded(node, over):
+            return 1
         return max(1, sum(rows(c) for c in node.children.values()))
     branches = ordered(root, labels, root_label)
     sides = [0, 0]                           # rows on the right, on the left
@@ -930,7 +959,13 @@ def cmd_draw(args) -> None:
     folder = Path(args.folder)
     meta, urls = load(folder)
     if not 2 <= args.limit <= MAX_LIMIT:
-        raise SitemapError(f"--limit must be between 2 and {MAX_LIMIT}, the most the Whimsical MCP takes at once.")
+        raise SitemapError(f"--limit must be between 2 and {MAX_LIMIT}, the most the Whimsical MCP takes in one "
+                           "mind map.")
+    if args.type != "mindmap" and args.limit > MAX_FLOWCHART:
+        raise SitemapError(f"a flowchart takes at most {MAX_FLOWCHART:,} nodes in the Whimsical MCP: use --limit "
+                           f"{MAX_FLOWCHART} or less, or draw only the mind map with more.")
+    if args.collapse_over < 0:
+        raise SitemapError("--collapse-over takes a number of pages, or 0 to keep every node open.")
     if not 1 <= args.per_level < MAX_ROWS:
         raise SitemapError(f"--per-level must be between 1 and {MAX_ROWS - 1}, the most rows a flowchart table "
                            "takes, with the 'other pages' row.")
@@ -975,7 +1010,11 @@ def cmd_draw(args) -> None:
             print(f'Flowchart root: set the root table\'s header to {{"row": 0, "col": 0, '
                   f'"text": "[{label(root, labels, root_label)}]({link})"{icon}}}.'
                   + (' With the logo, also widen it: "widths": [<the root table\'s width plus 60>].' if icon else ""))
-        left = left_branches(root, labels, root_label) if kind == "mindmap" else []
+        left = left_branches(root, labels, root_label, args.collapse_over) if kind == "mindmap" else []
+        shut = collapsed_lines(root, labels, root_label, args.collapse_over) if kind == "mindmap" else []
+        if shut:
+            print(f"Mind map collapsed: nodes {ranges(shut)} ({len(shut)} of {root.size}, by their line in "
+                  f"mindmap.md, the root is 1): the lists of more than {args.collapse_over} pages start closed.")
         if left:
             print(f"Mind map sides: put top-level branches {ranges(left)} on the left "
                   f"(of {len(root.children)}, counted from 1 in order).")
@@ -1050,6 +1089,8 @@ def main(argv=None) -> None:
     p.add_argument("--locale", help="language prefix to draw, like en-us; none for unprefixed pages; all")
     p.add_argument("--limit", type=int, default=DEFAULT_LIMIT, help="most nodes to draw (default 1000)")
     p.add_argument("--section", help="draw only this section, like /blog")
+    p.add_argument("--collapse-over", type=int, default=COLLAPSE_OVER,
+                   help="in the mind map, collapse lists of more pages than this (default 8; 0 keeps all open)")
     p.add_argument("--icon", help="icon for the root, from Whimsical's set, like logo-github")
     p.add_argument("--per-level", type=int, default=PER_LEVEL,
                    help="most children shown under any node; the rest become 'and N other pages' (default 30)")
