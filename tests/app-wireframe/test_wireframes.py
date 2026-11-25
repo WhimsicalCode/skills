@@ -12,8 +12,7 @@ def cli(*args, check=True):
 
 
 def text(t, size="m", **style):
-    return ["text", {"text": t, "font-size": size, "text-align": "left",
-                     "layout/style": {"height": wf.LINE_H[size], **style}}]
+    return ["text", {"text": t, "font-size": size, **({"layout/style": style} if style else {})}]
 
 
 def col(*children, **attrs):
@@ -28,64 +27,67 @@ def errors(layout):
     return wf.lint_layout(layout).errors
 
 
-def listing(frame, rows):
-    """Detailed fetch listing; rows are (kind, id, text) or (kind, id, text, (x, y, w, h))."""
-    lines = []
-    for item in rows:
-        kind, ident, label = item[:3]
-        x, y, w, h = item[3] if len(item) > 3 else (0, 0, 10, 10)
-        props = ' [props: {"text_align":"left"}]' if label else ""
-        lines.append(f"{kind},{ident},{frame},{x},{y},{w},{h},Slate,{label}{props}")
-    header = "type,id,parentId,x,y,width,height,color,text"
-    return json.dumps({"id": "board", "text": f"Board: {len(rows)} objects.\n\n{header}\n" + "\n".join(lines)})
-
-
 # ---------------------------------------------------------------- draft checks
 
 def test_valid_card_layout_passes():
     card = col(
         ["w-shape", {"color": "light-gray", "deco": "fill", "layout/style": {"height": 80, "margin": {"bottom": -80}}}],
         col(text("**Title**"), row(text("Meta", "s", flex=1),
-                                   ["icon", {"icon-name": "favorite", "deco": "outline", "wf/color": "red",
+                                   ["icon", {"icon-name": "favorite", "deco": "outline", "color": "red",
                                              "layout/style": {"width": 20, "height": 20}}])),
-        **{"wf/group": "card"},
+        group=True,
     )
-    lint = wf.lint_layout(col(card))
+    lint = wf.lint_layout(col(card, ["div", {"layout/style": {"flex-direction": "row", "margin": {"top": -8}}},
+                                     text("Badge", flex=1)]))
+    assert (lint.errors, lint.warnings) == ([], [])
+    assert lint.groups == {"$/0": [0, 1, 2, 3]}
+    assert [leaf["tag"] for leaf in lint.leaves] == ["w-shape", "text", "text", "icon", "text"]
+
+
+def test_groups_nest_and_count_inner_groups_as_members():
+    lint = wf.lint_layout(col(col(col(text("a"), text("b"), group=True), text("c"), group=True)))
     assert lint.errors == []
-    assert lint.groups == {"card": [0, 1, 2, 3]}
-    assert [leaf["tag"] for leaf in lint.leaves] == ["w-shape", "text", "text", "icon"]
-    assert lint.leaves[3]["color"] == "red"
+    assert lint.groups == {"$/0": ["$/0/0", 2], "$/0/0": [0, 1]}
+
+
+def test_tabs_take_item_objects_with_icons():
+    tabs = ["w-h-tabs", {"items": ["Home", {"text": "Search", "icon-name": "zoom-2", "selected": True}]}]
+    assert errors(col(tabs)) == []
 
 
 @pytest.mark.parametrize("layout, fragment", [
-    (col(["text", {"text": "x", "text-align": "left"}]), "needs layout/style height"),
-    (col(["text", {"text": "x", "layout/style": {"height": 24}}]), "needs text-align"),
-    (col(row(["text", {"text": "x", "text-align": "left", "layout/style": {"height": 24}}])), "needs a width or flex"),
-    (["div", {"layout/style": {"margin": {"top": 4}, "flex-direction": "column"}}], "Containers can't take margin"),
+    (["div", {"layout/style": {"margin": {"top": 4}, "flex-direction": "column"}}], "root div can't take margin"),
     (["div", {}], "flex-direction explicitly"),
     (col(["w-shape", {}, text("x")]), "can't have children"),
     (col(["w-image", {}]), "unknown tag"),
-    (col(["icon", {"icon-name": "favorite", "deco": "outline", "color": "red",
-                   "layout/style": {"width": 20, "height": 20}}]), "doesn't take 'color'"),
+    (col(["icon", {"icon-name": "favorite", "deco": "multicolor", "color": "red",
+                   "layout/style": {"width": 20, "height": 20}}]), "multicolor icon can't take color"),
+    (col(["icon", {"icon-name": "favorite", "deco": "outline", "wf/color": "red",
+                   "layout/style": {"width": 20, "height": 20}}]), "wf/color is gone"),
     (col(["icon", {"icon-name": "favorite", "layout/style": {"width": 20, "height": 20}}]), "deco: outline"),
     (col(["icon", {"icon-name": "favorite", "deco": "outline"}]), "width and height"),
-    (col(["w-icon", {"icon-name": "plus"}]), "draws something else"),
+    (col(["w-icon", {"icon-name": "phone"}]), "draws something else"),
     (col(["w-icon", {"icon-name": "notification"}]), "isn't in the icon set"),
-    (col(["w-h-tabs", {"items": [{"text": "Home"}]}]), "plain strings"),
+    (col(["w-dropdown", {"items": [{"text": "Home"}]}]), "must be a string"),
+    (col(["w-h-tabs", {"items": [{"label": "Home"}]}]), "takes text (required)"),
     (col(["w-toggle", {}]), "w-toggle state"),
-    (col(text("**Almost gone.** This")), "closing **"),
     (col(["w-button", {"text": "Go", "size": "m", "font-size": "s"}]), "not both"),
     (col(["w-shape", {"color": "teal"}]), "isn't a palette color"),
     (col(["w-stars", {"pos": 4.5}]), "pos must be between 0 and 1"),
-    (col(col(text("a"), **{"wf/group": "outer"}), col(col(text("b"), **{"wf/group": "x"}), **{"wf/group": "y"})),
-     "only one level"),
+    (col(col(text("a"), **{"wf/group": "card"})), "wf/group is gone"),
+    (col(col(text("a"), group=True)), "at least 2 elements"),
+    (col(col(text("a"), text("b"), group="yes")), "true or false"),
 ])
 def test_check_catches_layouts_that_render_badly(layout, fragment):
     assert any(fragment in message for message in errors(layout)), errors(layout)
 
 
-def test_nbsp_after_marker_is_fine():
-    assert errors(col(text("**Almost gone.**\u00a0This"))) == []
+def test_plain_space_after_marker_is_fine():
+    assert errors(col(text("**Almost gone.** This"))) == []
+
+
+def test_warns_on_explicit_text_height():
+    assert any("measures text" in w for w in wf.lint_layout(col(text("x", height=24))).warnings)
 
 
 def test_warns_on_heavy_placeholders_and_outlined_cards():
@@ -94,12 +96,6 @@ def test_warns_on_heavy_placeholders_and_outlined_cards():
         ["w-shape", {"color": "white", "deco": "outline", "layout/style": {"width": 360, "height": 120}}]))
     assert any("looks heavy" in w for w in lint.warnings)
     assert any("outlined card" in w for w in lint.warnings)
-
-
-def test_clean_strips_draft_annotations_only():
-    layout = col(["icon", {"icon-name": "x", "deco": "outline", "wf/color": "red"}], **{"wf/group": "g"})
-    assert wf.clean(layout) == ["div", {"layout/style": {"flex-direction": "column"}},
-                                ["icon", {"icon-name": "x", "deco": "outline"}]]
 
 
 def test_strip_markdown_matches_rendered_text():
@@ -152,7 +148,7 @@ def test_icon_check_board_is_separate_from_the_wireframe_board(make_run):
     assert json.loads((run / "run.json").read_text())["swatch_board_id"] == "SCRATCH"
 
 
-# ---------------------------------------------------------------- render, group, links
+# ---------------------------------------------------------------- render and links
 
 @pytest.fixture
 def prepared_run(make_run):
@@ -162,9 +158,9 @@ def prepared_run(make_run):
         col(["w-shape", {"color": "light-gray", "deco": "fill",
                          "layout/style": {"height": 40, "margin": {"bottom": -40}}}],
             row(text("Card, title", flex=1),
-                ["icon", {"icon-name": "favorite", "deco": "outline", "wf/color": "red",
+                ["icon", {"icon-name": "favorite", "deco": "outline", "color": "red",
                           "layout/style": {"width": 20, "height": 20}}]),
-            **{"wf/group": "card"}),
+            group=True),
         text("Footer"),
     )
     (run / "drafts" / "01.json").write_text(json.dumps(draft))
@@ -177,7 +173,7 @@ def test_prepare_prints_the_create_call_then_the_repair_call(prepared_run):
     arguments = first["arguments"]
     assert (arguments["board_id"], arguments["title"], arguments["x"], arguments["y"]) == ("BOARD", "01 Screen 0",
                                                                                            216, 446)
-    assert "wf/" not in json.dumps(first)
+    assert arguments["data"]["layout"] == json.loads((prepared_run / "drafts" / "01.json").read_text())
     cli("set", prepared_run, "01", "frame_id=FRAME")
     repair = json.loads(cli("prepare", prepared_run, "01").stdout)
     assert repair["tool"] == "wireframe_edit" and repair["arguments"]["target_id"] == "FRAME"
@@ -189,63 +185,6 @@ def test_prepare_places_frames_on_the_board_grid(make_run):
     (run / "drafts" / "07.json").write_text(json.dumps(col(text("x"))))
     arguments = json.loads(cli("prepare", run, "07").stdout)["arguments"]
     assert (arguments["x"], arguments["y"]) == (wf.COLUMN_PITCH + 216, wf.ROW_PITCH + 446)
-
-
-def test_postpass_maps_reverse_listing_to_groups_and_colors(prepared_run, tmp_path):
-    cli("prepare", prepared_run, "01")
-    cli("set", prepared_run, "01", "frame_id=FRAME")
-    rows = [("text", "t2", "Footer", (0, 100, 50, 24)), ("icon", "i1", ""), ("text", "t1", "Card, title"),
-            ("w-shape:rect", "s1", "", (0, 0, 392, 40))]
-    (tmp_path / "l.json").write_text(listing("FRAME", rows))
-    result = json.loads(cli("postpass", prepared_run, "01", tmp_path / "l.json").stdout)
-    assert result["id"] == "BOARD"
-    assert result["operations"] == [{"op": "update", "id": "i1", "color": "red"},
-                                    {"op": "group", "ids": ["s1", "t1", "i1"]}]
-
-
-@pytest.mark.parametrize("rows", [
-    [("text", "t2", "Footer"), ("icon", "i1", ""), ("text", "t1", "Card, title")],
-    [("text", "t2", "Footer"), ("icon", "i1", ""), ("text", "t1", "Other"), ("w-shape:rect", "s1", "")],
-    [("group", "g", ""), ("text", "t2", "Footer")],
-])
-def test_postpass_refuses_listings_that_dont_match(prepared_run, tmp_path, rows):
-    cli("prepare", prepared_run, "01")
-    cli("set", prepared_run, "01", "frame_id=FRAME")
-    (tmp_path / "l.json").write_text(listing("FRAME", rows))
-    assert cli("postpass", prepared_run, "01", tmp_path / "l.json", check=False).returncode != 0
-
-
-def test_postpass_needs_positions(prepared_run, tmp_path):
-    cli("prepare", prepared_run, "01")
-    cli("set", prepared_run, "01", "frame_id=FRAME")
-    simple = ("type,id,parentId,text\ntext,t2,FRAME,Footer\nicon,i1,FRAME,\n"
-              "text,t1,FRAME,Card, title\nw-shape:rect,s1,FRAME,\n")
-    (tmp_path / "l.txt").write_text(simple)
-    result = cli("postpass", prepared_run, "01", tmp_path / "l.txt", check=False)
-    assert result.returncode != 0 and "detailed" in result.stderr
-
-
-def test_postpass_keeps_floating_elements_above_groups(make_run, tmp_path):
-    run = make_run()
-    cli("board", run, "--id", "BOARD")
-    surface = ["w-shape", {"color": "light-gray", "deco": "fill",
-                           "layout/style": {"height": 100, "margin": {"bottom": -100}}}]
-    draft = col(
-        col(surface, text("Card one"), **{"wf/group": "card-1"}),
-        ["w-button", {"text": "Keep going", "layout/style": {"margin": {"top": -30}}}],
-        col(surface, text("Card two"), **{"wf/group": "card-2"}),
-    )
-    (run / "drafts" / "01.json").write_text(json.dumps(draft))
-    cli("prepare", run, "01")
-    cli("set", run, "01", "frame_id=FRAME")
-    rows = [("text", "t2", "Card two", (0, 130, 200, 24)), ("w-shape:rect", "s2", "", (0, 130, 392, 100)),
-            ("w-button", "b", "Keep going", (100, 90, 120, 32)),
-            ("text", "t1", "Card one", (0, 0, 200, 24)), ("w-shape:rect", "s1", "", (0, 0, 392, 100))]
-    (tmp_path / "l.json").write_text(listing("FRAME", rows))
-    out = cli("postpass", run, "01", tmp_path / "l.json")
-    assert json.loads(out.stdout)["operations"] == [{"op": "group", "ids": ["s1", "t1"]},
-                                                    {"op": "group", "ids": ["b", "s2", "t2"]}]
-    assert "floats over grouped content" in out.stderr
 
 
 def test_links_go_under_each_frame(prepared_run, tmp_path):
@@ -272,14 +211,15 @@ def test_icons_records_checked_names_and_refuses_misleading_ones(make_run):
                        if n not in wf.icon_index()["descriptions"] and n not in wf.VERIFIED_ICONS)
     cli("icons", run, undescribed, "globe")
     assert json.loads((run / "run.json").read_text())["icons_checked"] == sorted([undescribed, "globe"])
-    assert cli("icons", run, "plus", check=False).returncode != 0
+    assert cli("icons", run, "phone", check=False).returncode != 0
     draft = col(["icon", {"icon-name": undescribed, "deco": "outline", "layout/style": {"width": 20, "height": 20}}])
     assert not any("no description" in w for w in wf.lint_layout(draft, [undescribed]).warnings)
     assert any("no description" in w for w in wf.lint_layout(draft).warnings)
 
 
 def test_swatch_is_a_valid_layout():
-    assert wf.lint_layout(json.loads(cli("swatch", "zoom-2", "favorite").stdout)).errors == []
+    lint = wf.lint_layout(json.loads(cli("swatch", "zoom-2", "favorite").stdout))
+    assert (lint.errors, lint.warnings) == ([], [])
 
 
 def test_grid_writes_two_halves_at_frame_scale(make_run):

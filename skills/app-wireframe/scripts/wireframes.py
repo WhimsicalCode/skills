@@ -6,7 +6,7 @@
 
 It never calls an MCP server or the network. The agent calls Whimsical and passes
 results in; this script keeps the run ledger, checks drafts before they're sent,
-turns a frame listing into grouping edits, and draws measuring grids.
+and draws measuring grids.
 
   uv run scripts/wireframes.py <command> --help
 """
@@ -46,7 +46,7 @@ LINK_GAP = 20
 LINK_TEXT = "See screen on Mobbin.com"
 
 CONTAINER_STYLE = {"flex-direction", "gap", "padding", "align-items", "justify-content", "flex-wrap",
-                   "width", "height", "flex", "flex-grow", "flex-shrink"}
+                   "width", "height", "flex", "flex-grow", "flex-shrink", "margin"}
 ELEMENT_STYLE = {"width", "height", "flex", "flex-grow", "flex-shrink", "align-self", "margin"}
 DIRECTIONS = {"row", "column", "row-reverse", "column-reverse"}
 ALIGNS = {"center", "flex-end", "flex-start", "stretch"}
@@ -82,13 +82,10 @@ PROPS = {
     "shape": {"text", "shape-type", "color", "deco"},
     "text": {"text", "color", "font-size", "text-align"},
     "link": {"text", "url"},
-    "icon": {"icon-name", "deco"},
+    "icon": {"icon-name", "deco", "color"},
 }
-TEXT_BEARING = {"text", "w-button", "w-link", "w-tag"}
-# Object kind that `fetch` reports for each draft tag, used to match a render back to its draft.
-FETCH_KIND = {"text": "text", "w-shape": "w-shape", "icon": "icon", "w-icon": "w-icon",
-              "w-button": "w-button", "w-link": "w-button", "w-tag": "w-tag", "w-divider": "w-divider",
-              "w-h-tabs": "w-tabs", "w-v-tabs": "w-tabs", "link": "link"}
+TABS = {"w-h-tabs", "w-v-tabs"}
+TAB_ITEM_KEYS = {"text", "icon-name", "selected"}
 
 # Icon names known to draw the expected glyph as an outline icon.
 VERIFIED_ICONS = {
@@ -111,12 +108,10 @@ VERIFIED_ICONS = {
     "cart-simple-add": "add to cart", "dots": "more (three horizontal dots)", "arrow-down": "arrow down",
     "verified": "verified badge with check", "bell-55": "notification bell", "box-2": "package box (orders)",
 }
-# Names that resolve to a different icon than the word suggests, with what to use instead.
-BAD_ICONS = {"plus": "e-add", "minus": "e-delete", "phone": "phone-2", "shield-check": "shield",
-             "search": "zoom-2 (plain `search` draws a magnifier in a box)", "heart": "favorite",
-             "user": "single-01", "chevron-down": "ctrl-down", "chevron-right": "ctrl-right",
-             "chevron-left": "ctrl-left", "share": "upload (iOS share; `share` draws a box with a curved arrow)",
-             "home": "house",
+# Names that draw a different icon than the word suggests, with what to use instead. The MCP maps
+# plus, minus, close, x, search, heart, home, user, chevron-*, hamburger and bell to the usual glyph.
+BAD_ICONS = {"phone": "phone-2", "shield-check": "shield",
+             "share": "upload (iOS share; `share` draws a box with a curved arrow)",
              "star": "a ★ text glyph (the star icon draws a star in a box)"}
 
 MARKER = re.compile(r"\*\*|~~")
@@ -182,7 +177,7 @@ def cmd_init(args):
             "key": key, "file": image_path.name, "label": label, "title": f"{key} {label}",
             "mobbin_url": info.get("mobbin_url"), "sha256": hashlib.sha256(image_path.read_bytes()).hexdigest(),
             "width": width, "height": height, "status": "pending", "frame_id": None,
-            "renders": 0, "reviews": 0, "findings": [], "grouped": False, "link_id": None, "notes": "",
+            "renders": 0, "reviews": 0, "findings": [], "link_id": None, "notes": "",
         })
     run.mkdir(parents=True, exist_ok=True)
     (run / "drafts").mkdir(exist_ok=True)
@@ -248,7 +243,7 @@ def cmd_status(args):
         counts[s["status"]] = counts.get(s["status"], 0) + 1
         open_findings = [f for f in s["findings"] if f.get("severity") == "major"]
         print(f"  {s['key']} {s['label'][:28]:28} {s['status']:12} renders={s['renders']} reviews={s['reviews']}"
-              f" grouped={'y' if s['grouped'] else 'n'} link={'y' if s['link_id'] else 'n'}"
+              f" link={'y' if s['link_id'] else 'n'}"
               f" frame={s['frame_id'] or '-'} major={len(open_findings)}")
     print("  " + ", ".join(f"{k}: {v}" for k, v in sorted(counts.items())))
 
@@ -275,12 +270,7 @@ def strip_markdown(text):
 
 
 def check_markdown(lint, path, text):
-    markers = list(MARKER.finditer(text))
-    for n, match in enumerate(markers):
-        if n % 2 == 1 and match.end() < len(text) and text[match.end()] == " ":
-            lint.error(path, f"a space right after a closing {match.group()} isn't rendered; "
-                             f"use \\u00a0 instead: {text!r}")
-    if len(markers) % 2:
+    if len(MARKER.findall(text)) % 2:
         lint.warn(path, f"unbalanced ** or ~~ in {text!r}")
 
 
@@ -313,8 +303,8 @@ def check_style(lint, path, style, allowed, is_container):
     return style
 
 
-def walk(lint, node, path, depth, parent, group, definite):
-    """`parent` is the parent div's style; `definite` says whether that div has a known width."""
+def walk(lint, node, path, depth, parent, group):
+    """`parent` is the parent div's style; `group` is the path of the enclosing `group: true` div."""
     if depth > MAX_DEPTH:
         lint.error(path, f"nesting deeper than {MAX_DEPTH}")
         return
@@ -325,72 +315,60 @@ def walk(lint, node, path, depth, parent, group, definite):
     has_attrs = len(node) > 1 and isinstance(node[1], dict)
     attrs = node[1] if has_attrs else {}
     children = node[2:] if has_attrs else node[1:]
-    parent_dir = parent.get("flex-direction", "column")
     if tag == "div":
         for key in attrs:
-            if key not in ("layout/style", "wf/group"):
-                lint.error(path, f"div only takes layout/style and wf/group, not {key!r}")
+            if key == "wf/group":
+                lint.error(path, 'wf/group is gone: put "group": true on the div; the MCP groups it as it renders')
+            elif key not in ("layout/style", "group"):
+                lint.error(path, f"div only takes layout/style and group, not {key!r}")
         style = check_style(lint, path, attrs.get("layout/style", {}), CONTAINER_STYLE, True)
+        if path == "$" and any(k.startswith("margin") for k in style):
+            lint.error(path, "the root div can't take margin: it has no parent")
         direction = style.get("flex-direction")
         if direction is None:
             lint.error(path, "set flex-direction explicitly on every div")
             direction = "column"
-        name = attrs.get("wf/group")
-        if name is not None:
-            if not isinstance(name, str) or not name:
-                lint.error(path, "wf/group must be a non-empty string")
-            elif group is not None:
-                lint.error(path, f"wf/group {name!r} is inside {group!r}; only one level of groups is supported")
-            elif name in lint.groups:
-                lint.error(path, f"duplicate wf/group name {name!r}")
-            else:
-                lint.groups[name] = []
-                group = name
-        sized = any(k in style for k in ("width", "flex", "flex-grow"))
-        if parent_dir.startswith("row"):
-            known = sized
-        else:
-            known = sized or (definite and parent.get("align-items", "stretch") == "stretch")
+        if "group" in attrs:
+            if not isinstance(attrs["group"], bool):
+                lint.error(path, "group must be true or false")
+            elif attrs["group"]:
+                if group is not None:
+                    lint.groups[group].append(path)
+                lint.groups[path] = []
+                group = path
         for i, child in enumerate(children):
-            walk(lint, child, f"{path}/{i}", depth + 1, {"flex-direction": direction, **style}, group, known)
+            walk(lint, child, f"{path}/{i}", depth + 1, {"flex-direction": direction, **style}, group)
         return
     if tag not in PROPS:
         lint.error(path, f"unknown tag {tag!r} (there's no w-image, w-map or w-avatar; see techniques.md)")
         return
     if children:
         lint.error(path, f"{tag} can't have children; layer it with a negative margin instead")
-    allowed = PROPS[tag] | {"layout/style", "wf/color"}
+    allowed = PROPS[tag] | {"layout/style"}
     for key in attrs:
-        if key not in allowed:
+        if key == "wf/color":
+            lint.error(path, "wf/color is gone: give the icon color directly")
+        elif key not in allowed:
             lint.error(path, f"{tag} doesn't take {key!r} (takes {', '.join(sorted(PROPS[tag]))})")
     style = check_style(lint, path, attrs.get("layout/style", {}), ELEMENT_STYLE, False)
     if "size" in attrs and "font-size" in attrs:
         lint.error(path, "set size or font-size, not both")
-    for key in ("color", "wf/color"):
-        if key in attrs and attrs[key] not in COLORS and not re.fullmatch(r"#[0-9a-fA-F]{6}", str(attrs[key])):
-            lint.error(path, f"{key} {attrs[key]!r} isn't a palette color")
+    if "color" in attrs and attrs["color"] not in COLORS and not re.fullmatch(r"#[0-9a-fA-F]{6}", str(attrs["color"])):
+        lint.error(path, f"color {attrs['color']!r} isn't a palette color")
     text = attrs.get("text")
     if isinstance(text, str):
         check_markdown(lint, path, text)
     if tag == "text":
-        if "text-align" not in attrs:
-            lint.error(path, "text needs text-align (wireframe text is centered by default)")
         size = attrs.get("font-size", "m")
         if size not in TEXT_SIZES:
             lint.error(path, f"bad font-size {size!r}")
-        if "height" not in style:
-            lint.error(path, f"text needs layout/style height = lines x {LINE_H.get(size, '?')} "
-                             "(without it, text in rows can take extra height and push content down)")
-        elif size in LINE_H and style["height"] % LINE_H[size]:
-            lint.warn(path, f"text height {style['height']} isn't a multiple of the {size} line height {LINE_H[size]}")
-        if parent_dir.startswith("row") and not ("width" in style or "flex" in style):
-            lint.error(path, "text inside a row needs a width or flex: 1")
-        elif not parent_dir.startswith("row") and "width" not in style and (
-                not definite or parent.get("align-items", "stretch") != "stretch"):
-            lint.warn(path, "text in a shrink-wrapped column: give it (or its column) a width")
+        if "height" in style:
+            lint.warn(path, "leave text height out: the MCP measures text, and an explicit height must match exactly")
     if tag == "icon":
         if attrs.get("deco") not in ("outline", "fill", "multicolor"):
             lint.error(path, "icon needs deco: outline (or fill)")
+        if "color" in attrs and attrs.get("deco") == "multicolor":
+            lint.error(path, "a multicolor icon can't take color")
         if "width" not in style or "height" not in style:
             lint.error(path, "icon needs layout/style width and height (default is 96px)")
     if tag == "w-icon":
@@ -398,9 +376,7 @@ def walk(lint, node, path, depth, parent, group, definite):
     if tag in ("w-icon", "w-shape", "icon", "w-button", "w-tag", "w-input", "w-textarea") and "icon-name" in attrs:
         check_icon(lint, path, attrs["icon-name"])
     if "items" in attrs:
-        items = attrs["items"]
-        if not isinstance(items, list) or not all(isinstance(i, str) for i in items):
-            lint.error(path, "items must be plain strings (objects end up as label text)")
+        check_items(lint, path, tag, attrs["items"])
     pos = attrs.get("pos")
     if tag in ("w-stars", "w-progress-bar", "w-slider") and pos is not None and (
             not isinstance(pos, (int, float)) or not 0 <= pos <= 1):
@@ -416,23 +392,33 @@ def walk(lint, node, path, depth, parent, group, definite):
     if tag == "w-shape" and attrs.get("deco") == "outline" and attrs.get("shape-type") in ("ellipse", "pill"):
         lint.warn(path, "outlined circle/pill: default to a borderless fill (light-gray on white, white on "
                         "light-gray) unless the source border matters or it floats over white")
-    if tag == "w-button" and "icon-name" in attrs and "width" not in style and style.get("align-self") != "stretch":
-        lint.warn(path, "buttons with an icon render wider than the layout expects: set an explicit width")
     if tag == "w-button" and attrs.get("color") == "light-gray" and attrs.get("deco") == "fill" \
             and attrs.get("state") != "disabled":
         lint.warn(path, "a light-gray w-button renders as a darker blue-gray: use a w-tag or a layered pill shape")
     if tag == "w-shape" and attrs.get("shape-type", "rect") not in ("rect", "ellipse", "pill"):
         lint.error(path, "shape-type must be rect, ellipse or pill")
-    if tag in ("w-h-tabs", "w-v-tabs"):
-        lint.warn(path, "native tabs show no icons and no selected tab; build tab bars from icon + label stacks")
-    if "wf/color" in attrs and tag != "icon":
-        lint.warn(path, f"{tag} takes color directly; wf/color is for outline icons")
-    leaf = {"index": len(lint.leaves), "tag": tag, "path": path, "group": group, "color": attrs.get("wf/color")}
-    if tag in TEXT_BEARING and isinstance(text, str):
+    leaf = {"index": len(lint.leaves), "tag": tag, "path": path, "group": group}
+    if isinstance(text, str):
         leaf["text"] = strip_markdown(text)
     lint.leaves.append(leaf)
     if group is not None:
         lint.groups[group].append(leaf["index"])
+
+
+def check_items(lint, path, tag, items):
+    if not isinstance(items, list):
+        lint.error(path, "items must be a list")
+        return
+    for i, item in enumerate(items):
+        if isinstance(item, str):
+            continue
+        if tag not in TABS or not isinstance(item, dict):
+            extra = " or {text, icon-name, selected}" if tag in TABS else ""
+            lint.error(path, f"items[{i}] must be a string{extra}")
+        elif set(item) - TAB_ITEM_KEYS or not isinstance(item.get("text"), str):
+            lint.error(path, f"items[{i}] takes text (required), icon-name and selected")
+        elif "icon-name" in item:
+            check_icon(lint, f"{path}/items[{i}]", item["icon-name"])
 
 
 def check_icon(lint, path, name):
@@ -445,8 +431,8 @@ def check_icon(lint, path, name):
         if target:
             lint.warn(path, f"icon-name {name!r} is an alias of {target!r}; use the real name")
         else:
-            lint.error(path, f"icon-name {name!r} isn't in the icon set and would be replaced by the closest-spelled "
-                             "icon. Find a real name with `wireframes.py icon <concept>`")
+            lint.error(path, f"icon-name {name!r} isn't in the icon set: the MCP refuses it or swaps in a close "
+                             "match. Find a real name with `wireframes.py icon <concept>`")
     elif (name not in VERIFIED_ICONS and name not in lint.checked_icons
           and name not in index.get("descriptions", {})):
         lint.warn(path, f"icon-name {name!r} exists but has no description; check it in a swatch first")
@@ -457,28 +443,15 @@ def lint_layout(layout, checked_icons=()):
     if not is_hiccup(layout) or layout[0] != "div":
         lint.error("$", 'root must be ["div", {...}, ...]')
         return lint
-    walk(lint, layout, "$", 0, {"flex-direction": "column"}, None, True)
+    walk(lint, layout, "$", 0, {"flex-direction": "column"}, None)
     if len(lint.leaves) > MAX_ELEMENTS:
         lint.error("$", f"{len(lint.leaves)} elements; a wireframe takes at most {MAX_ELEMENTS}")
     elif len(lint.leaves) > MAX_ELEMENTS - 20:
         lint.warn("$", f"{len(lint.leaves)} elements, close to the {MAX_ELEMENTS} limit")
-    for name, members in lint.groups.items():
+    for group_path, members in lint.groups.items():
         if len(members) < 2:
-            lint.warn("$", f"wf/group {name!r} has {len(members)} element(s); it won't be grouped")
+            lint.error(group_path, f"a group needs at least 2 elements; this one holds {len(members)}")
     return lint
-
-
-def clean(node):
-    """Drop the draft-only wf/* keys so the layout is exactly what the MCP accepts."""
-    if not is_hiccup(node):
-        return node
-    out = [node[0]]
-    rest = node[1:]
-    if rest and isinstance(rest[0], dict):
-        out.append({k: v for k, v in rest[0].items() if not k.startswith("wf/")})
-        rest = rest[1:]
-    out.extend(clean(child) for child in rest)
-    return out
 
 
 def report(lint):
@@ -510,20 +483,16 @@ def cmd_prepare(args):
     report(lint)
     if lint.errors:
         sys.exit(f"{len(lint.errors)} error(s); fix the draft before rendering.")
-    cleaned = clean(layout)
-    (drafts / f"{screen['key']}.manifest.json").write_text(json.dumps(
-        {"key": screen["key"], "leaves": lint.leaves, "groups": lint.groups,
-         "draft_sha256": hashlib.sha256(draft.read_bytes()).hexdigest()}, indent=1, ensure_ascii=False) + "\n")
     # Create the frame once; every later render replaces its contents in place.
     if screen["frame_id"]:
         tool = "wireframe_edit"
         arguments = {"board_id": state["board_id"], "target_id": screen["frame_id"], "frame_type": "iphone-14",
-                     "layout": cleaned}
+                     "layout": layout}
     else:
         tool = "add_board_content"
         center = frame_center(state["screens"].index(screen))
         arguments = {"type": "wireframe", "board_id": state["board_id"], "title": screen["title"],
-                     "x": center["x"], "y": center["y"], "data": {"frame_type": "iphone-14", "layout": cleaned}}
+                     "x": center["x"], "y": center["y"], "data": {"frame_type": "iphone-14", "layout": layout}}
     call = {"tool": tool, "arguments": arguments}
     (drafts / f"{screen['key']}.render.json").write_text(json.dumps(call, ensure_ascii=False) + "\n")
     print(json.dumps(call, ensure_ascii=False, separators=(",", ":")))
@@ -558,89 +527,6 @@ def listing_rows(raw):
         row["text"] = re.sub(r"( \[(props|url): .*?\])+$", "", row.get("text", ""))
         rows.append(row)
     return rows
-
-
-def cmd_postpass(args):
-    state = load(args.run)
-    screen = screen_of(state, args.screen)
-    if not screen["frame_id"]:
-        sys.exit("Record the frame_id before grouping.")
-    if screen["grouped"]:
-        sys.exit("Already grouped. A layout re-render removes the groups; set grouped=false after one.")
-    manifest = json.loads((Path(args.run) / "drafts" / f"{screen['key']}.manifest.json").read_text())
-    raw = Path(args.listing).read_text()
-    if re.search(r"Showing \d+ of \d+", raw):
-        sys.exit("The listing is truncated; fetch again with limit 200.")
-    rows = [r for r in listing_rows(raw) if r["parentId"] == screen["frame_id"]]
-    if any(r["kind"] == "group" for r in rows):
-        sys.exit("The frame already contains groups. Inspect it; don't regroup blindly.")
-    rendered = list(reversed(rows))  # fetch lists a frame's elements in reverse layout order
-    leaves = manifest["leaves"]
-    if len(rendered) != len(leaves):
-        sys.exit(f"The frame has {len(rendered)} elements but the draft has {len(leaves)}. Is the listing complete"
-                 " and current? Wait a few seconds and fetch again before anything else.")
-    problems = []
-    for leaf, row in zip(leaves, rendered):
-        expected = FETCH_KIND.get(leaf["tag"])
-        if expected and row["kind"] != expected:
-            problems.append(f"{leaf['path']}: draft {leaf['tag']} but rendered {row['type']}")
-        if "text" in leaf and leaf["text"] and strip_markdown(row.get("text", "")) != leaf["text"]:
-            problems.append(f"{leaf['path']}: text {leaf['text']!r} vs rendered {row.get('text')!r}")
-    if problems:
-        sys.exit("Rendered elements don't match the draft; not grouping:\n  " + "\n  ".join(problems[:12]))
-    ids = [row["id"] for row in rendered]
-    groups = [list(members) for members in manifest["groups"].values() if len(members) >= 2]
-    notes = protect_floating(leaves, rendered, groups)
-    operations = [{"op": "update", "id": ids[leaf["index"]], "color": leaf["color"]}
-                  for leaf in leaves if leaf.get("color")]
-    # Each new group is stacked above everything ungrouped, in creation order: create them in draft order.
-    operations += [{"op": "group", "ids": [ids[i] for i in sorted(members)]}
-                   for members in sorted(groups, key=min)]
-    for note in notes:
-        print(f"note: {note}", file=sys.stderr)
-    result = {"id": state["board_id"], "operations": operations}
-    out = Path(args.run) / "drafts" / f"{screen['key']}.edit.json"
-    out.write_text(json.dumps(result, ensure_ascii=False, separators=(",", ":")) + "\n")
-    print(json.dumps(result, ensure_ascii=False, separators=(",", ":")))
-
-
-def box(row):
-    try:
-        return float(row["x"]), float(row["y"]), float(row["width"]), float(row["height"])
-    except (KeyError, ValueError):
-        return None
-
-
-def overlaps(a, b):
-    return a[0] < b[0] + b[2] and b[0] < a[0] + a[2] and a[1] < b[1] + b[3] and b[1] < a[1] + a[3]
-
-
-def protect_floating(leaves, rendered, groups):
-    """Fold ungrouped elements that sit on top of grouped content into a later group.
-
-    A new group is drawn above every ungrouped element, so an ungrouped floating button
-    drawn over a card would end up hidden under the card's group.
-    """
-    boxes = [box(row) for row in rendered]
-    if any(b is None for b in boxes):
-        sys.exit("Grouping needs element positions: fetch the frame with detail 'detailed'.")
-    grouped = {i for members in groups for i in members}
-    notes = []
-    for leaf in leaves:
-        i = leaf["index"]
-        if i in grouped:
-            continue
-        below = [g for g in groups if min(g) < i and any(overlaps(boxes[i], boxes[j]) for j in g)]
-        if not below:
-            continue
-        later = [g for g in groups if min(g) > i]
-        target = min(later, key=min) if later else max(groups, key=min)
-        target.append(i)
-        grouped.add(i)
-        notes.append(f"{leaf['tag']} {leaf.get('text', '')!r} at {leaf['path']} floats over grouped content; "
-                     f"added to the group starting at element {min(target)} so it stays visible. Give floating "
-                     "controls their own wf/group (with a neighbour) to choose the grouping yourself.")
-    return notes
 
 
 def cmd_links(args):
@@ -734,8 +620,7 @@ def cmd_swatch(args):
     for i in range(0, len(args.names), 5):
         cells = [["div", {"layout/style": {"flex-direction": "column", "align-items": "center", "gap": 2, "width": 72}},
                   ["icon", {"icon-name": name, "deco": "outline", "layout/style": {"width": 24, "height": 24}}],
-                  ["text", {"text": name, "font-size": "xs", "text-align": "center",
-                            "layout/style": {"width": 72, "height": 32}}]]
+                  ["text", {"text": name, "font-size": "xs", "text-align": "center", "layout/style": {"width": 72}}]]
                  for name in args.names[i:i + 5]]
         rows.append(["div", {"layout/style": {"flex-direction": "row", "gap": 4}}, *cells])
     print(json.dumps(["div", {"layout/style": {"flex-direction": "column", "gap": 8, "padding": 8}}, *rows],
@@ -829,11 +714,6 @@ def main():
     p.add_argument("run")
     p.add_argument("screen")
     p.set_defaults(func=cmd_prepare)
-    p = sub.add_parser("postpass", help="grouping and icon-color edit from a saved frame listing")
-    p.add_argument("run")
-    p.add_argument("screen")
-    p.add_argument("listing")
-    p.set_defaults(func=cmd_postpass)
     p = sub.add_parser("links", help="credit-link edit from a saved listing of the board's frames")
     p.add_argument("run")
     p.add_argument("listing")
