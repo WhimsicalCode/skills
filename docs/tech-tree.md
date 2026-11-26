@@ -2,8 +2,9 @@
 
 # Tech Tree
 
-Turn a [Whimsical](https://whimsical.com) board of tasks, a kanban, or Linear issues into a tech
-tree: each task one column after what it needs, so the order of the work reads at a glance, with
+Turn any list of tasks into a tech tree on a [Whimsical](https://whimsical.com) board: a board
+of cards or a kanban, Linear issues, another tool's tasks, or a markdown to-do list. Each task sits
+one column after what it needs, so the order of the work reads at a glance, with
 what can start now, what's waiting on what, which tasks run side by side, and the critical path.
 
 ```text
@@ -12,8 +13,8 @@ Turn this board into a tech tree: https://whimsical.com/acme-launch-...
 
 ![A carbonara recipe as a tech tree: the critical path from boiling the water to plating runs in orange across the middle, the shopping, the guanciale and the egg sauce feed into it from below, and the three sauce-prep tasks sit side by side in a dashed rectangle](tech-tree.png)
 
-Your agent reads every task, from the cards on a Whimsical board or the issues of a Linear
-project, cycle or team, works out which tasks block which, checks the dependencies it inferred
+Your agent reads every task, from the cards on a Whimsical board, the issues of a Linear
+project, cycle or team, or whatever list you give it, works out which tasks block which, checks the dependencies it inferred
 with you, and draws the tree on a new board, laid out like a metro map: lines of tasks run left
 to right, and arrows bend as little as they can and cross as rarely as they can.
 
@@ -77,14 +78,27 @@ we've tried, none were left.
   outside the set that blocks one in it is drawn too, and the agent tells you which.
 - **Groups** come from sub-issues of one parent.
 
-Either way, the agent only adds a dependency of its own when a task can't start without the
+### From anything else
+
+Another tool your agent is connected to (Todoist, Asana, Jira and so on), or a list you paste or
+point it to, like a markdown to-do list. The agent reads the tasks with the tools it has:
+
+- **Status**: finished is done, started is in progress, the rest is to do. A ticked box (`[x]`)
+  is done.
+- **Dependencies** come from the tool's "blocked by" links if it has them, or from what the tasks
+  say ("blocked by: pick a mover"). Most to-do lists have none, so most dependencies are the
+  agent's judgement, and it says so.
+- **Links**: each card links to its task when the tool gives tasks an address.
+
+Whatever the source, the agent only adds a dependency of its own when a task can't start without the
 other, and shows you those, with why, before drawing.
 
 ## Status
 
 This is a new project, written mostly by coding agents. We've tried it in Claude Code on
-Whimsical boards of 15 to 30 tasks and on a small Linear project, with blocking relations,
-sub-issues and a blocker from outside the project. In Codex, it reads the source and lays the tree
+Whimsical boards of 15 to 30 tasks, on a small Linear project, with blocking relations,
+sub-issues and a blocker from outside the project, and on a pasted markdown to-do list. Not yet on
+other tools. In Codex, it reads the source and lays the tree
 out, but can't draw it yet: Codex doesn't offer the Whimsical MCP's `edit` tool, which the drawing
 needs. If something breaks,
 please [open an issue](https://github.com/WhimsicalCode/skills/issues/new/choose).
@@ -163,6 +177,8 @@ Start your agent in the folder where you want the working files, then ask in pla
 Turn this board into a tech tree: https://whimsical.com/...
 What order should we do these tasks in? https://whimsical.com/...
 Make a tech tree of our Q3 launch project in Linear
+Make a tech tree of my Todoist project "Office move"
+Make a tech tree of this to-do list: [x] Sign the lease  [ ] Pick a mover  [ ] Move day ...
 What's blocking what in the current cycle of the Platform team?
 ```
 
@@ -178,8 +194,8 @@ draws the tree on a new board.
 ## How it works
 
 ```text
- Whimsical board                                       tree.json
- or Linear issues  ─►  your agent reads the tasks  ─►  (tasks, groups, dependencies)
+ Whimsical board,                                      tree.json
+ Linear, any list  ─►  your agent reads the tasks  ─►  (tasks, groups, dependencies)
                                                           │
                                                           ▼
                                                    techtree.py layout  ─►  plan.json
@@ -189,7 +205,8 @@ draws the tree on a new board.
 ```
 
 1. The agent reads the source and writes `tree.json`: every task with its status, the groups,
-   and the dependencies.
+   and the dependencies. That file is the only thing the layout needs, so any source works;
+   [`tree-format.md`](../skills/tech-tree/references/tree-format.md) describes it.
 2. `techtree.py layout` checks it (unknown ids, loops), drops implied arrows, finds the critical
    path and lays the tree out, deterministically: the same tree always gets the same drawing.
    It writes every card, rectangle and arrow as Whimsical edit operations.
