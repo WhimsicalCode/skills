@@ -9,7 +9,7 @@ B needs A when **B can't start, or would have to be redone, until A is done**:
 
 - B uses what A makes: the dashboard needs the data model it reads; the sauce needs the yolks.
 - B decides something A settles: you can't price the plan before choosing the vendor.
-- Someone said so: an arrow on the board, a Linear "blocks" relation, or a card or issue saying
+- Someone said so: an arrow on the board, a "blocks" or "blocked by" link in the source, or a task saying
   "after X", "blocked by X", "once X is live", "depends on X".
 
 Not dependencies:
@@ -28,7 +28,7 @@ add; a wrong one sends the reader the wrong way.
 
 ## Explicit and inferred
 
-- **Explicit**: drawn on the board, set as a relation in Linear, or written on a card or issue.
+- **Explicit**: drawn on the board, set as a link in the source, or written on a task.
   Keep them, unless one is plainly wrong
   (a loop, or a task needing something that comes after it); then ask.
 - **Inferred**: your judgement from what the tasks are. Keep a short reason for each ("the KPI
@@ -54,6 +54,6 @@ step.
 
 ## Status
 
-Status comes from the source (`source-whimsical.md`, `source-linear.md`), not from the
+Status comes from the source (`tree-format.md`), not from the
 dependencies: a task in progress is `doing` even if what it needs isn't done. Don't change a
 status to make the tree look tidier.
