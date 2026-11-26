@@ -111,8 +111,9 @@ setups. If something breaks, please [open an issue](https://github.com/Whimsical
 
 ## Install
 
-The skill needs two MCP servers: Whimsical, `https://mcp.whimsical.com/mcp`, and
-Mobbin, `https://api.mobbin.com/mcp` (skip Mobbin if you only use your own screenshots).
+The skill needs Whimsical's MCP server, `https://mcp.whimsical.com/mcp`, and Mobbin's,
+`https://api.mobbin.com/mcp`, to name an app or use Mobbin links. With only your own
+screenshots, Whimsical's is enough.
 
 ### Claude Code
 
