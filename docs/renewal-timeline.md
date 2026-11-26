@@ -33,6 +33,19 @@ It works with seat-based SaaS pricing, flat fees, monthly retainers and one-off 
 It's not meant for renewals you handle as a buyer, or for domain names, licenses and
 subscriptions that renew on their own.
 
+## What it reads from
+
+- **Your email or CRM**: the renewal threads in Gmail, Outlook, Front, HubSpot, Salesforce or
+  any other tool your agent is connected to. The agent reads the full messages, not previews,
+  since previews cut numbers off.
+- **A thread you paste or export**, if your agent has no connector for it.
+- **Usage numbers**, if you have them, from an admin dashboard or a BI tool. The summary uses
+  them to compare what's billed with what's used; without them, it never guesses.
+- **An `events.json`** you prepared, in the
+  [skill's format](../skills/renewal-timeline/references/event-schema.md).
+
+It only reads. It never sends an email or changes a record in your CRM.
+
 ## What you'll get
 
 A new board called `<Customer> <Year> Renewal Timeline`:
@@ -52,13 +65,6 @@ and the open items.
 Ask again later, with new emails or a few lines of what happened, and the agent adds the new
 steps to the same board.
 
-## Status
-
-This is a new project, and most of it was written by coding agents. We've used it at
-Whimsical on real renewals, in Claude Code and on claude.ai, but it hasn't been tested much
-with other agents or tools. If something breaks, please
-[open an issue](https://github.com/WhimsicalCode/skills/issues/new/choose).
-
 ## Requirements
 
 - An agent that supports skills and remote MCP servers, such as
@@ -70,9 +76,7 @@ with other agents or tools. If something breaks, please
 - Python 3.9 or later, with nothing to install. Most Macs and Linux machines have it, and so
   does Claude's sandbox; on a Mac that doesn't, the first run offers to install Apple's
   command line tools.
-
-Usage numbers are optional. If you have them (an admin dashboard, a BI tool), the summary
-uses them; it never guesses.
+- Optional: usage numbers, for the summary.
 
 ## Install
 
@@ -190,6 +194,13 @@ The one thing it writes is the Whimsical board.
 your team can comment on it and share it. Updates work best when they come from the same
 `renewals/<Customer>/` folder, since `events.json` there is what the next update builds on.
 
+## Status
+
+This is a new project, and most of it was written by coding agents. We've used it at
+Whimsical on real renewals, in Claude Code and on claude.ai, but it hasn't been tested much
+with other agents or tools. If something breaks, please
+[open an issue](https://github.com/WhimsicalCode/skills/issues/new/choose).
+
 ## Privacy
 
 The skill doesn't collect anything. It only reads your email and CRM, and never sends a
@@ -197,31 +208,6 @@ message or changes a record unless you ask it to. Boards get short summaries, no
 bodies. Email and CRM content is treated as data, never as instructions to the agent. Your
 agent talks to Whimsical through its MCP server, under
 [Whimsical's privacy policy](https://whimsical.com/terms/privacy).
-
-## Development
-
-```text
-skills/renewal-timeline/
-  SKILL.md                 the workflow the agent follows
-  references/
-    event-schema.md        the events.json format
-    board-layout.md        what the board looks like, element by element
-    summary-template.md    the summary's structure
-  scripts/
-    build_board.py         checks events.json, writes the Whimsical calls
-  examples/                a small example and a full deal, both fictional
-tests/renewal-timeline/    tests for the script (fixtures/: a real board read, fictional data)
-```
-
-Its Claude Code plugin entry, with the Whimsical MCP server, is in the repository's
-[`marketplace.json`](../.claude-plugin/marketplace.json). From the repository root:
-
-```sh
-uv run --group dev pytest tests/renewal-timeline
-```
-
-The script must keep running on Python 3.9, which a test checks. [CONTRIBUTING.md](../CONTRIBUTING.md)
-covers the rest.
 
 ## License
 

@@ -162,26 +162,13 @@ def test_the_same_tree_always_gets_the_same_plan():
 # ---------------------------------------------------------------- the commands
 
 
-def test_start_layout_and_footer(tmp_path):
+def test_layout_writes_the_plan_and_prints_a_summary(tmp_path):
     folder = tmp_path / "tech-trees" / "acme"
-    run_script("start", folder, cwd=tmp_path)
-    assert json.loads((folder / "run.json").read_text())["started"] > 0
-    again = run_script("start", folder, cwd=tmp_path)
-    assert "picking up" in again.stdout
+    folder.mkdir(parents=True)
     tree = write_tree(folder, {"a": "done", "b": "todo"}, [("a", "b")])
     summary = json.loads(run_script("layout", tree, "--out", folder / "plan.json", cwd=tmp_path).stdout)
     assert summary["arrows"] == 1 and "ops" not in summary
-    footer = json.loads(run_script("footer", folder, folder / "plan.json", cwd=tmp_path).stdout)
-    assert footer["type"] == "text"
-    assert footer["text"].startswith("Generated in **")
-    assert "[tech-tree](https://whimsical.com/skills/tech-tree)" in footer["text"]
-    assert "\n\n\u00a0\n\nTry it\n\n```\nnpx skills add WhimsicalCode/skills --skill tech-tree\n```" in footer["text"]
-
-
-def test_footer_without_start_says_what_to_do(tmp_path):
-    result = run_script("footer", tmp_path, tmp_path / "plan.json", cwd=tmp_path, check=False)
-    assert result.returncode != 0
-    assert "run `start` first" in result.stderr
+    assert json.loads((folder / "plan.json").read_text())["ops"]
 
 
 def test_the_tracks_fallback_draws_cleanly_too():

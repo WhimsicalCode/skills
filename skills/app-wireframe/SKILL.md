@@ -1,6 +1,6 @@
 ---
 name: app-wireframe
-description: Turn app screens into editable lo-fi wireframes on a Whimsical board. Use when the user names an app (pulls up to 15 key iOS screens from Mobbin), gives a Mobbin screen or collection link, describes a screen such as "Airbnb checkout", or gives their own iPhone screenshots. Also places screenshots the user dropped on such a board next to their wireframes.
+description: Turn app screens into editable lo-fi wireframes on a Whimsical board. Reads up to 15 key iOS screens from Mobbin (an app's name, a Mobbin screen or collection link, or a screen like "Airbnb checkout"), or the user's own iPhone screenshots. Also places screenshots the user dropped on the board next to their wireframes. Use when the user asks to wireframe an app or a screen, or to turn screenshots into wireframes, even if they don't say "skill".
 ---
 
 # App Wireframe

@@ -1,6 +1,6 @@
 ---
 name: tech-tree
-description: Turn tasks into a tech tree on a new Whimsical board, from a Whimsical board of cards, todos or a kanban, from Linear issues (a project, a cycle, a team or a label), or from any other list of tasks, such as another project management tool or a markdown to-do list. Reads every task, works out which tasks block which (Linear's blocking relations, arrows on the board, or judgement), and draws them as a metro map from left to right, so the order of the work reads at a glance, with what can start now, what's waiting on what, which tasks can run side by side, and the critical path, the longest chain of unfinished tasks. Use when the user asks for a tech tree, dependency graph or dependency map, the order to do a list of tasks in, what blocks what, what can start now, the critical path, or a roadmap drawn from a board of cards, Linear or a to-do list, even if they don't say "skill".
+description: Turn any list of tasks into a tech tree on a new Whimsical board, showing what depends on what, what can start now and the critical path. Reads a Whimsical board of cards or a kanban, a markdown or pasted to-do list, Linear issues (a project, cycle, team or label), or another tool's tasks. Use when the user asks for a tech tree, a dependency graph or map, the order to do tasks in, what blocks what, what can start now, the critical path, or a roadmap from a board, Linear or a to-do list, even if they don't say "skill".
 ---
 
 # Tech Tree
@@ -8,29 +8,36 @@ description: Turn tasks into a tech tree on a new Whimsical board, from a Whimsi
 Turns a set of tasks into a tech tree on a new Whimsical board: each task one column after the
 last thing it needs, arrows from what it needs, similar tasks to do side by side in a dashed
 rectangle, the critical path in orange, and each card coloured by where it stands (done, in
-progress, start now, waiting). The tasks come from one of two sources:
+progress, start now, waiting).
+
+The tasks can come from any list: whatever the source, you read it into `tree.json`
+(`references/tree-format.md`), and the rest of the run is the same. Two sources have their own
+reference, for what they add (columns, arrows, relations):
 
 - **A Whimsical board**: its cards, columns and arrows. `references/source-whimsical.md`.
 - **Linear**: issues of a project, a cycle, a team or a label, with their relations.
   `references/source-linear.md`.
 
+Anything else, a pasted list, a markdown file or another tool you have tools for, you read
+directly into `tree.json`. Only the Whimsical MCP is required; Linear or another tool is only
+needed when the tasks are there.
+
 You read the source and judge the dependencies; `<this skill's folder>/scripts/techtree.py`
 does the layout, deterministically: where every card and arrow goes, with as few crossing arrows
-and bends as it can. It never calls Whimsical or Linear; you send its calls as they are. Run
-every command from the folder you were started in; the working files go in `tech-trees/<name>/`
-there, where `<name>` is a short name for the source (`acme-launch`).
+and bends as it can. It never calls Whimsical or any other tool; you send its calls as they are.
+Run every command from the folder you were started in; the working files go in
+`tech-trees/<name>/` there, where `<name>` is a short name for the source (`acme-launch`).
 
-## Step 1: Start, and read the source
+## Step 1: Read the source
 
-1. Start the run, so the board can say how long it took:
-   ```bash
-   python3 <this skill's folder>/scripts/techtree.py start tech-trees/<name>
-   ```
-2. Work out the source from the request: a `whimsical.com` link or a board's name is a Whimsical
-   board; a `linear.app` link, or a Linear project, cycle, team or label, is Linear. If it's
+1. Work out the source from the request: a list in the message or a file is read as it is; a
+   `whimsical.com` link or a board's name is a Whimsical board; a `linear.app` link, or a Linear
+   project, cycle, team or label, is Linear; another tool's name or link is that tool. If it's
    unclear, ask.
-3. Read it as its reference says. A source with no reference here (another tool, a pasted list)
-   is read with the tools you have, into `tree.json` as `references/tree-format.md` describes.
+2. Read it: a Whimsical board or Linear as its reference says, anything else with the tools you
+   have, into `tree.json` as `references/tree-format.md` describes. If the source is a tool you
+   have no tools for (no Linear MCP, say), tell the user in one line that its MCP server or
+   connector needs adding, or that they can paste the list, and stop.
    Never change the source: no edits to the board, the issues or the tasks. The tree goes on a
    new board.
 
@@ -97,13 +104,8 @@ connection doesn't offer `edit`, and say the tree is ready in `tech-trees/<name>
    `image: true` and `crop_ids` set to the arrow's id (from the `edit` reply). If it still
    reads clearly, make it grey again: `edit` with `{"op": "update", "id": <its id>, "color":
    "silver"}`. If it doesn't, leave it red and say so in the report.
-4. Add the footer last, so its time covers the whole run:
-   ```bash
-   python3 <this skill's folder>/scripts/techtree.py footer tech-trees/<name> tech-trees/<name>/plan.json
-   ```
-   It prints one operation; call `edit` with `operations` set to a list holding just it.
-5. Check the board: `fetch` with `image: true`. A big tree makes a small picture, so check that
-   it's all there, the key and footer above the top left, and that a text read (`fetch`,
+4. Check the board: `fetch` with `image: true`. A big tree makes a small picture, so check that
+   it's all there, the key above the top left, and that a text read (`fetch`,
    `select_kinds: ["connector"]`, `limit: 1`) counts as many arrows as the plan has `conn`
    operations. If a call failed or something's missing, `fetch` before trying again: a call can
    partly succeed, and repeating it draws things twice.

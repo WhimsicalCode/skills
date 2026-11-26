@@ -1,6 +1,6 @@
 ---
 name: website-sitemap
-description: Draw a website's sitemap on a Whimsical board, as a mind map or a flowchart of section tables, from the site's sitemap.xml files. Reads every nested sitemap, keeps one language, groups pages made from one pattern (directories, dated posts, numbered pages), and draws the site top down so even a site with thousands of pages stays readable on one board. Use when the user asks for a sitemap, site map, site structure, information architecture or page tree of a website or domain, says "map out acme.com", or wants to plan a website rebuild or migration from an existing site, even if they don't say "skill" or "Whimsical".
+description: Draw a website's sitemap on a Whimsical board, as a mind map or a flowchart of section tables, readable even for sites with thousands of pages. Reads the site's sitemap.xml and every sitemap nested in it. Use when the user asks for a sitemap, site map, site structure, information architecture or page tree of a website or domain, says "map out acme.com", or plans a rebuild or migration of an existing site, even if they don't say "skill" or "Whimsical".
 ---
 
 # Website Sitemap
@@ -156,11 +156,10 @@ returns a snapshot of it).
    script printed>]}`. With a logo, add `"widths": [<the table's width in the reply, plus
    60>]` to the same operation: the column is sized for the name alone, and the logo would
    wrap it.
-4. Sign it, once everything else is drawn: run
-   `python3 <this skill's folder>/scripts/sitemap.py note sitemaps/<domain>`. It prints three
-   lines: how long the run took (timed from the fetch, without the time the user took to
-   choose), the sitemap it read and when, and how many of its pages are drawn. Add them as one
-   text item: `edit` with one operation, `{"op": "add", "type": "text", "text": <the three
+4. Say where it came from, once everything else is drawn: run
+   `python3 <this skill's folder>/scripts/sitemap.py note sitemaps/<domain>`. It prints two
+   lines: the sitemap it read and when, and how many of its pages are drawn. Add them as one
+   text item: `edit` with one operation, `{"op": "add", "type": "text", "text": <the two
    lines, as printed, joined by line breaks>, "x": <x>, "y": <y minus 120>, "width": 800,
    "text_align": "left"}`, with x and y the top-left corner of the first diagram as it is now.
    Balancing moves a mind map, so read its box again: `fetch` with `select_kinds:

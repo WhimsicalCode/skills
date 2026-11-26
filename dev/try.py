@@ -1,10 +1,12 @@
 """Try a skill the way a user would: install it into a new, empty folder and start an agent there.
 
-    uv run dev/try.py <skill> [--agent claude|codex|none] [--source PATH_OR_REPO] [--prompt TEXT] [FILE ...]
+    uv run dev/try.py <skill> [--agent claude|codex|none] [--source PATH_OR_REPO] [--mcp NAME=URL]
+                          [--prompt TEXT] [FILE ...]
 
 The skill is installed with the same `npx skills add` command as the guides, from this working copy
 unless --source says otherwise. To try what's published, name it WhimsicalCode/skills/<skill>. The agent
-only gets the MCP servers listed in the skill's marketplace.json entry, and Claude Code skips your
+only gets the MCP servers listed in the skill's marketplace.json entry, plus any --mcp NAME=URL (a
+source the skill can read but doesn't need, like Linear for tech-tree), and Claude Code skips your
 user settings, so your own plugins stay out of the way. FILEs are copied into the folder, to give the
 agent something to work on. Runs go in ~/skill-bench, or $SKILL_BENCH.
 
@@ -283,6 +285,8 @@ def main():
                         help="a blank Claude Code, set up and signed in as the guide says, like a new user's")
     parser.add_argument("--save-token", action="store_true", help="save the Claude Code token --fresh runs use")
     parser.add_argument("--source", default=str(ROOT), help="where to install from (default this working copy)")
+    parser.add_argument("--mcp", action="append", default=[], metavar="NAME=URL",
+                        help="also connect this http MCP server, such as an optional source")
     parser.add_argument("--prompt", help="run the agent on its own with this request, and report how it went")
     parser.add_argument("files", nargs="*", type=Path, help="files to copy into the folder")
     args = parser.parse_args()
@@ -299,6 +303,11 @@ def main():
         args.source, _, args.skill = args.skill.rpartition("/")
 
     servers = mcp_servers(args.skill)
+    for extra in args.mcp:
+        name, _, url = extra.partition("=")
+        if not name or not url.startswith("https://"):
+            fail(f"--mcp takes NAME=URL with an https URL, not {extra!r}")
+        servers[name] = {"type": "http", "url": url}
     for tool in ["npx", *([] if args.agent == "none" else [args.agent])]:
         if not shutil.which(tool):
             fail(f"{tool} isn't installed")

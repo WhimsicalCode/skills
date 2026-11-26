@@ -9,7 +9,7 @@ Codex, GitHub Copilot, Gemini CLI and other agents that read skills.
 | --- | --- | --- |
 | [App Wireframe](docs/app-wireframe.md) | Turns any app into editable lo-fi wireframes: name an app to pull its screens from Mobbin, or bring your own screenshots. [See 20 example boards](https://whimsical.com/templates/wireframes). | `Make wireframes of Airbnb` |
 | [Renewal Timeline](docs/renewal-timeline.md) | Turns the emails behind a customer or contract renewal into a timeline of every offer and counter-offer, with a pricing table, and writes the renewal summary: terms, NRR, usage, open items. | `Build the renewal timeline for Initech` |
-| [Tech Tree](docs/tech-tree.md) | Turns a Whimsical board of tasks, a kanban, Linear issues or a markdown to-do list into a tech tree: which task needs which, what can start now, and the critical path, laid out like a metro map with as few crossing arrows as it can. | `Turn this board into a tech tree` |
+| [Tech Tree](docs/tech-tree.md) | Turns any list of tasks into a tech tree. Start from a Whimsical board, a kanban, a markdown or text to-do list, Linear issues or another tool, and see what depends on what, what you can start now, and the critical path. | `Turn this board into a tech tree` |
 | [Website Sitemap](docs/website-sitemap.md) | Draws any website's sitemap from its sitemap.xml, as a mind map or a flowchart of section tables. Main pages and sections first, repeated pages grouped, the rest counted, so even big sites fit. | `Make a sitemap of acme.com` |
 
 These skills are new, and mostly written with coding agents. If something breaks in your
@@ -74,7 +74,7 @@ following your agent's MCP setup guide.
 skills/<name>/                    each skill: SKILL.md, references/, scripts/
 docs/<name>.md                    each skill's guide: what it does, install, use, privacy
 docs/covers/                      each skill's cover for whimsical.com, and how to make one
-tests/<name>/                     each skill's tests, outside the skill so they stay out of its zip
+tests/<name>/                     each skill's tests and notes for contributors, outside its zip
 tests/repo/                       checks every skill against the conventions
 .claude-plugin/marketplace.json   the Claude Code catalog: each skill's version and MCP servers
 .github/workflows/                tests on every change; a release zip of every skill per tag

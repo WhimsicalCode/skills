@@ -17,6 +17,10 @@ MARKETPLACE = json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_tex
 FRONTMATTER_KEYS = {"name", "description", "license", "metadata", "allowed-tools"}
 COVERS = ROOT / "docs" / "covers"
 COVER_KEYS = {"category", "headline"}
+GUIDE_SECTIONS = ["What it reads from", "What you'll get", "Requirements", "Install", "Use it", "How it works",
+                  "Status", "Privacy", "License"]
+INSTALL_TABS = ["Claude Code", "Claude apps (claude.ai and the desktop app)",
+                "Other agents (Cursor, Codex, GitHub Copilot, Gemini CLI and more)"]
 # Distribution names whose import name differs.
 IMPORT_NAMES = {"pillow": "PIL"}
 
@@ -101,6 +105,8 @@ def test_marketplace_lists_only_skills_that_exist():
 def test_has_guide_tests_and_gallery_row(skill):
     assert (ROOT / "docs" / f"{skill.name}.md").is_file(), f"add docs/{skill.name}.md"
     assert any((ROOT / "tests" / skill.name).glob("test_*.py")), f"add tests in tests/{skill.name}/"
+    assert (ROOT / "tests" / skill.name / "README.md").is_file(), \
+        f"add tests/{skill.name}/README.md, for people working on the skill"
     assert f"(docs/{skill.name}.md)" in (ROOT / "README.md").read_text(), "add a row to the README's skill table"
 
 
@@ -123,6 +129,52 @@ def test_guide_intro_is_what_the_website_shows(skill):
     assert len(tabs) >= 2, "'## Install' has one '### ' subsection per agent"
     labels = [t.split(" (")[0] for t in tabs]
     assert all(len(label) <= 20 for label in labels), f"tab names, before ' (', stay short: {labels}"
+
+
+@pytest.mark.parametrize("skill", SKILLS, ids=lambda p: p.name)
+def test_guide_has_the_usual_sections_in_order(skill):
+    # Every guide reads the same way; other sections can go between these. See CONVENTIONS.md.
+    headings = re.findall(r"^## (.+)$", (ROOT / "docs" / f"{skill.name}.md").read_text(), re.M)
+    assert [h for h in headings if h in GUIDE_SECTIONS] == GUIDE_SECTIONS, \
+        f"the guide has these '## ' sections, in this order: {GUIDE_SECTIONS}"
+
+
+@pytest.mark.parametrize("skill", SKILLS, ids=lambda p: p.name)
+def test_guide_install_matches_the_other_guides(skill):
+    # The install steps are the same for every skill but its name and MCP servers, so they can't drift.
+    name, guide = skill.name, (ROOT / "docs" / f"{skill.name}.md").read_text()
+    install = re.search(r"^## Install\n(.*?)(?=^## |\Z)", guide, re.S | re.M)[1]
+    intro, *tabs = re.split(r"^### ", install, flags=re.M)
+    tabs = {tab.split("\n", 1)[0]: tab for tab in tabs}
+    assert list(tabs) == INSTALL_TABS, f"'## Install' has these tabs, in this order: {INSTALL_TABS}"
+    servers = entry(skill).get("mcpServers", {})
+    assert intro.strip().startswith("The skill needs"), "'## Install' opens with the MCP servers the skill needs"
+    for server in servers.values():
+        assert f"`{server['url']}`" in intro, f"'## Install' names {server['url']}, from marketplace.json"
+
+    claude_code, claude_apps, others = tabs.values()
+    assert f"npx skills add WhimsicalCode/skills --skill {name} --agent claude-code -g\n" in claude_code
+    for server_name, server in servers.items():
+        assert f"claude mcp add --transport http --scope user {server_name} {server['url']}\n" in claude_code
+    assert f"/plugin marketplace add WhimsicalCode/skills\n/plugin install {name}@whimsical\n" in claude_code
+    zip_link = f"[`{name}.zip`](https://github.com/WhimsicalCode/skills/releases/latest/download/{name}.zip)"
+    assert f"""1. Download
+   {zip_link}.
+2. In Claude, open **Customize** (on claude.ai, [claude.ai/customize/skills](https://claude.ai/customize/skills)),
+   click **Add**, then **Upload skill**, drop the zip and click **Upload**.
+3. Still in **Customize**, under **Connectors**, add Whimsical""" in claude_apps
+    assert f"""With [Node.js](https://nodejs.org) installed, run this in a terminal:
+
+```sh
+npx skills add WhimsicalCode/skills --skill {name} --agent cursor -g
+```
+
+Replace `cursor` with `codex`, `github-copilot`, `gemini-cli` or
+[another agent's name](https://github.com/vercel-labs/skills/blob/main/docs/agents.md).
+This copies the skill where your agent looks for skills, using the open
+[skills](https://github.com/vercel-labs/skills) installer. Without Node.js, unzip
+{zip_link}
+into that folder yourself.""" in others
 
 
 @pytest.mark.parametrize("skill", SKILLS, ids=lambda p: p.name)

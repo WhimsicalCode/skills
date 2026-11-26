@@ -17,7 +17,7 @@ you'd move through the app, each rebuilt as a lo-fi iPhone wireframe. Cards, tab
 and list rows are grouped, so you can drag them around and start editing right away.
 Every wireframe links back to its screen on Mobbin.
 
-## Two ways in
+## What it reads from
 
 ### Name an app, with the Mobbin MCP
 
@@ -86,12 +86,6 @@ Mobbin.
 
 The apps belong to their makers. Whimsical isn't affiliated with any of them.
 
-## Status
-
-This is a new project, and most of it was written by coding agents. We've used it at
-Whimsical to [wireframe 20 apps](#examples), but it hasn't been tested much with other agents or
-setups. If something breaks, please [open an issue](https://github.com/WhimsicalCode/skills/issues).
-
 ## Requirements
 
 - An agent that supports skills, remote MCP servers and images, such as
@@ -111,8 +105,8 @@ setups. If something breaks, please [open an issue](https://github.com/Whimsical
 
 ## Install
 
-The skill needs two MCP servers: Whimsical, `https://mcp.whimsical.com/mcp`, and
-Mobbin, `https://api.mobbin.com/mcp` (skip Mobbin if you only use your own screenshots).
+The skill needs two MCP servers: Whimsical, `https://mcp.whimsical.com/mcp`, and Mobbin,
+`https://api.mobbin.com/mcp`. If you only bring your own screenshots, Whimsical is enough.
 
 ### Claude Code
 
@@ -240,6 +234,12 @@ Screens on Mobbin belong to the companies that make those apps. Use them in line
 links each wireframe to its screen on Mobbin. If you're working in a git repository,
 keep `wireframes/` out of it.
 
+## Status
+
+This is a new project, and most of it was written by coding agents. We've used it at
+Whimsical to [wireframe 20 apps](#examples), but it hasn't been tested much with other agents or
+setups. If something breaks, please [open an issue](https://github.com/WhimsicalCode/skills/issues).
+
 ## Privacy
 
 The skill doesn't collect anything. Your agent talks to Whimsical and Mobbin through
@@ -247,30 +247,6 @@ their MCP servers, and reads the public mobbin.com page of a screen link you pas
 under their own privacy policies:
 [Whimsical](https://whimsical.com/terms/privacy) and
 [Mobbin](https://mobbin.com/privacy).
-
-## Development
-
-```text
-skills/app-wireframe/
-  SKILL.md                 the workflow the agent follows
-  references/              design rules, layout techniques, review and arrange guides
-  scripts/
-    wireframes.py          run progress, draft checks, grouping, links, icons, grid
-    arrange.py             places dropped screenshots next to their wireframes
-    mobbin_download.py     downloads and crops the Mobbin screens of a shortlist
-    mobbin_link.py         reads a pasted Mobbin link: app, screen tags, search query
-    icon_index.json        icon names, aliases and descriptions for the icon search
-tests/app-wireframe/       tests for the scripts
-```
-
-Its Claude Code plugin entry, with both MCP servers, is in the repository's
-[`marketplace.json`](../.claude-plugin/marketplace.json). From the repository root:
-
-```sh
-uv run --group dev pytest tests/app-wireframe
-```
-
-[CONTRIBUTING.md](../CONTRIBUTING.md) covers the rest.
 
 ## License
 

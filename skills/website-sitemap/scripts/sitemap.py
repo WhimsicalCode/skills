@@ -19,7 +19,7 @@
       --section draws one section on its own, like /blog. --icon puts an icon from Whimsical's set on
       the root, like logo-github.
   python3 sitemap.py note sitemaps/<site>
-      Print the text to put above the drawing: how long the run took, the sitemap, what's shown.
+      Print the text to put above the drawing: the sitemap it read, and how much of it is shown.
 
 Network: only the site named, its subdomains, and the sitemap files on them. The script never
 calls Whimsical.
@@ -35,7 +35,6 @@ import json
 import math
 import re
 import sys
-import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -54,7 +53,6 @@ MAX_PAGES = 2_000_000
 WORKERS = 8
 DEFAULT_PATHS = ("/sitemap.xml", "/sitemap_index.xml")
 NOT_FOUND = 3                      # exit status when the site has no sitemap
-SKILL_URL = "https://whimsical.com/skills/website-sitemap"
 
 DEFAULT_LIMIT = 1000
 MAX_LIMIT = 2000                   # the most nodes the Whimsical MCP takes in one mind map
@@ -903,8 +901,8 @@ def summary(meta: dict, urls: list[str], language: str | None = None, wanted: st
     return out
 
 
-def footer(meta: dict, language: str | None, root: Node, pages: int, folds: list[tuple[str, int]]) -> dict:
-    """What the text under the drawing says about the sitemap, saved for `note`."""
+def note_info(meta: dict, language: str | None, root: Node, pages: int, folds: list[tuple[str, int]]) -> dict:
+    """What the text above the drawing says about the sitemap, saved in note.json for `note`."""
     where = root.path if root.path != "/" else ""
     if language not in (None, "all"):
         where = f"/{language}{where}"
@@ -933,14 +931,7 @@ def root_link(meta: dict, root: Node, language: str | None) -> str:
     return urllib.parse.quote(url, safe=":/?#@!$&'*+,;=%").replace("(", "%28").replace(")", "%29")
 
 
-def start_run(folder: Path, fetch_seconds: float) -> None:
-    """Start timing a run of the skill: the fetch, then everything from the first draw on. The time the
-    user takes to choose a diagram, between the two, doesn't count."""
-    (folder / "run.json").write_text(json.dumps({"fetch_seconds": round(fetch_seconds, 1), "draw_started": None}))
-
-
 def cmd_fetch(args) -> None:
-    started = time.time()
     _, domain = site_of(args.site)
     folder = Path(args.out or "sitemaps") / domain
     if (folder / "pages.txt").is_file() and not args.refresh:
@@ -951,7 +942,6 @@ def cmd_fetch(args) -> None:
         save(report, folder)
         meta, urls = load(folder)
         print(f"Saved {len(urls):,} pages in {folder}/pages.txt.")
-    start_run(folder, time.time() - started)
     print("\n".join(summary(meta, urls)))
 
 
@@ -971,12 +961,6 @@ def cmd_draw(args) -> None:
                            "takes, with the 'other pages' row.")
     if args.icon and not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", args.icon):
         raise SitemapError(f"--icon takes an icon name from Whimsical's set, like logo-github, not {args.icon!r}.")
-    run_path = folder / "run.json"
-    if run_path.is_file():
-        run = json.loads(run_path.read_text())
-        if run.get("draw_started") is None:
-            run["draw_started"] = time.time()
-            run_path.write_text(json.dumps(run))
     prefixes = language_prefixes(urls)
     language = pick_language(urls, prefixes, args.locale)
     labels = read_labels(folder)
@@ -1026,11 +1010,8 @@ def cmd_draw(args) -> None:
                   f"{'s' if len(folds) != 1 else ''}, the biggest under {big}{', ...' if len(folds) > 6 else ''}.")
         print("Priority: the sitemap ranks its pages, so the drawing follows its ranking first." if by_priority
               else "Priority: not used (the sitemap doesn't rank its pages).")
-        run_info = footer(meta, language, root, pages, folds)
-    if run_path.is_file():
-        run = json.loads(run_path.read_text())
-        run["footer"] = run_info
-        run_path.write_text(json.dumps(run))
+        info = note_info(meta, language, root, pages, folds)
+    (folder / "note.json").write_text(json.dumps(info))
     unknown = sorted({k for k in labels if k.startswith("/")} - {n.path.lower() for n in root.walk()} - {"/"})
     print("Top level, as labelled (fix them in labels.json, by path or by word):")
     print(f"  {root.path} -> {label(root, labels, root_label)}")
@@ -1057,20 +1038,14 @@ def cmd_draw(args) -> None:
 
 
 def cmd_note(args) -> None:
-    """The text to put above the drawing once it's done: how long it took, the source, what's shown."""
-    run_path = Path(args.folder) / "run.json"
-    if not run_path.is_file():
-        raise SitemapError(f"{run_path} is missing; it's written by `fetch`.")
-    run = json.loads(run_path.read_text())
-    if "footer" not in run:
+    """The text to put above the drawing once it's done: the sitemap it read, and what's shown."""
+    note_path = Path(args.folder) / "note.json"
+    if not note_path.is_file():
         raise SitemapError("run `draw` first: the note describes what it drew.")
-    drawing = time.time() - run["draw_started"] if run.get("draw_started") else 0
-    seconds = max(1, round(run.get("fetch_seconds", 0) + drawing))
-    f = run["footer"]
+    f = json.loads(note_path.read_text())
     shown = f["pages"] - f["counted"]
     pages = plural(f["pages"], "page") + (f" in {f['where']}" if f["where"] else "")
     what = f"{pages}, **{shown:,}** of them drawn." if f["counted"] else f"{pages}, all drawn."
-    print(f"Generated in {seconds:,} second{'s' if seconds != 1 else ''}, using [website-sitemap]({SKILL_URL}).")
     print(f"[Sitemap of **{f['domain']}**]({f['sitemap']}), read on {when(f['read'])}.")
     print(what)
 
@@ -1095,7 +1070,7 @@ def main(argv=None) -> None:
     p.add_argument("--per-level", type=int, default=PER_LEVEL,
                    help="most children shown under any node; the rest become 'and N other pages' (default 30)")
     p.set_defaults(run=cmd_draw)
-    p = sub.add_parser("note", help="print the sticky note's text, with how long the run took")
+    p = sub.add_parser("note", help="print the text to put above the drawing")
     p.add_argument("folder")
     p.set_defaults(run=cmd_note)
     args = parser.parse_args(argv)
