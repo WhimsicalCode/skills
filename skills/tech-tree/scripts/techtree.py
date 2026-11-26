@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 """Lay out a tech tree for a Whimsical board: where every card, group and arrow goes.
 
-    python3 techtree.py start <folder>                  when the run begins
     python3 techtree.py layout <tree.json> --out <plan.json>
-    python3 techtree.py footer <folder> <plan.json>     the last thing to add to the board
 
 The tree is the agent's reading of the board: tasks, groups of tasks to do side by side, and
 which task needs which. A tech tree reads left to right in columns, one per tier: a task sits in
@@ -27,15 +25,12 @@ import argparse
 import json
 import random
 import sys
-import time
 from pathlib import Path
 
 CARD_W, CARD_H = 216, 108
 PAD, LABEL = 16, 30          # a group's padding around its cards, and its label above it
 ROW_GAP, COL_GAP = 80, 140   # between two rows of cards, and between two columns
 COLORS = {"done": "light-gray", "doing": "yellow", "ready": "green", "waiting": "white"}
-SKILL = "tech-tree"
-SKILL_URL = "https://whimsical.com/skills/tech-tree"
 KEY = [("ready", "Start now"), ("doing", "In progress"), ("waiting", "Waiting"), ("done", "Done")]
 KEY_ROW, KEY_SWATCH = 48, (48, 28)            # the key's rows, and the colour swatch in each
 
@@ -1136,7 +1131,7 @@ class Grid:
 
     def key(self):
         """The key, grouped, above the drawing's top left: a swatch for each status, the same on
-        every board, and the critical path's orange arrow. The footer goes to its right."""
+        every board, and the critical path's orange arrow."""
         t = self.tree
         rows = list(KEY)
         if t.critical:
@@ -1158,7 +1153,6 @@ class Grid:
                         "x": w + 24, "y": y + 2, "width": 260, "text_align": "left"})
             ids.append(f"key-{state}-label")
         ops.append({"op": "group", "ids": ids})
-        self.footer_at = {"x": w + 24 + 260 + 112, "y": top, "width": 503}
         return ops
 
     def plan(self):
@@ -1582,56 +1576,17 @@ def layout(path, strategy=None):
         **counts,
         "flagged": [list(grid.edges[i]) for i in grid.flagged()],
         "ops": grid.plan(),
-        "footer_at": grid.footer_at,
     }
-
-
-def start(folder):
-    """Note when the run began, so the footer can say how long it took."""
-    Path(folder).mkdir(parents=True, exist_ok=True)
-    run = Path(folder) / "run.json"
-    if run.exists():
-        print(f"{run} exists: picking up the run that started then.")
-        return
-    run.write_text(json.dumps({"started": time.time()}) + "\n")
-    print(f"Started a run in {folder}.")
-
-
-def footer(folder, plan_path):
-    """The footer's edit operation: how long the run took, and how to get the skill. The empty
-    paragraph (a non-breaking space) keeps a line between the two: Whimsical drops blank lines."""
-    try:
-        run = json.loads((Path(folder) / "run.json").read_text())
-        plan = json.loads(Path(plan_path).read_text())
-    except (OSError, json.JSONDecodeError) as error:
-        fail(f"can't read the run or the plan: {error}; run `start` first, and `layout` before this")
-    seconds = max(1, round(time.time() - run["started"]))
-    text = (f"Generated in **{seconds:,}** second{'s' if seconds != 1 else ''}, using the [{SKILL}]({SKILL_URL}) skill."
-            f"\n\n\u00a0\n\nTry it\n\n```\nnpx skills add WhimsicalCode/skills --skill {SKILL}\n```")
-    at = plan["footer_at"]
-    return {"op": "add", "type": "text", "text": text, "x": at["x"], "y": at["y"], "width": at["width"],
-            "text_align": "left"}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest="command", required=True)
-    p = sub.add_parser("start", help="note when the run began, in its folder")
-    p.add_argument("folder")
-    p = sub.add_parser("footer", help="print the footer to add last: how long it took, how to get the skill")
-    p.add_argument("folder")
-    p.add_argument("plan")
     p = sub.add_parser("layout", help="lay out a tree.json and print the plan")
     p.add_argument("tree")
     p.add_argument("--strategy", choices=("layers", "tracks"), help="only this way (default: both, the better)")
     p.add_argument("--out", help="write the plan here instead of printing it")
     args = parser.parse_args()
-    if args.command == "start":
-        start(args.folder)
-        return
-    if args.command == "footer":
-        print(json.dumps(footer(args.folder, args.plan), ensure_ascii=False))
-        return
     plan = layout(args.tree, args.strategy)
     text = json.dumps(plan, indent=1, ensure_ascii=False)
     if args.out:

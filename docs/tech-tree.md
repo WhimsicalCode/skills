@@ -83,7 +83,7 @@ A new board called `<Board, list or project> tech tree`, with:
   to each of its cards.
 - **The critical path** in orange, drawn on top: the longest chain of unfinished tasks, the one
   that decides how soon it's all done.
-- **A key** above the tree, and a line saying how long it took.
+- **A key** above the tree.
 
 ## Requirements
 
@@ -200,8 +200,7 @@ draws the tree on a new board.
 2. `techtree.py layout` checks it (unknown ids, loops), drops implied arrows, finds the critical
    path and lays the tree out, deterministically: the same tree always gets the same drawing.
    It writes every card, rectangle and arrow as Whimsical edit operations.
-3. The agent creates the board and sends the operations as they are, then adds the footer and
-   checks a snapshot.
+3. The agent creates the board, sends the operations as they are, and checks a snapshot.
 
 The script uses only Python's standard library and never calls Whimsical or any other tool.
 

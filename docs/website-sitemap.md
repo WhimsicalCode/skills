@@ -38,8 +38,8 @@ A new board called `<Site> sitemap`, with one of:
 
 Or both, side by side. The root links to the site, with its logo when Whimsical's icon set
 has it (Stripe and GitHub do; most sites don't, and Whimsical can't show favicons). Above the
-diagram, a short text says how long the drawing took, links to the sitemap with the time it
-was read, and says how many of the sitemap's pages are drawn.
+diagram, a short text links to the sitemap with the time it was read, and says how many of its
+pages are drawn.
 
 Labels come from the URLs (`/data-center` becomes "Data Center"), and the agent fixes the
 brand names and acronyms a URL loses, like "AcmePay" or "GlobexDB". The drawing follows the URLs,
@@ -163,7 +163,7 @@ and to open.
    6,000 tokens.
 3. The agent fixes labels, creates the board and passes the text to the Whimsical MCP as is.
    Whimsical lays the diagram out. The agent then spreads the mind map's branches on both
-   sides, collapses its long lists, adds the text about the run and checks a snapshot.
+   sides, collapses its long lists, adds the text about the sitemap and checks a snapshot.
 
 The script uses only Python's standard library and never calls Whimsical.
 

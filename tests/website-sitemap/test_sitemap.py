@@ -533,7 +533,6 @@ def test_fetch_reuses_saved_pages(tmp_path):
     saved_site(tmp_path, acme(blog=5))
     out = run_script("fetch", "https://www.acme.com", cwd=tmp_path).stdout
     assert out.startswith("Already fetched on 2026-11-25")
-    assert json.loads((tmp_path / "sitemaps" / "acme.com" / "run.json").read_text())["draw_started"] is None
     assert "acme.com: 9 URLs in 1 sitemap file." in out
 
 
@@ -558,26 +557,18 @@ def test_draw_prints_the_flowchart_root_link(tmp_path):
     assert result.returncode == 1 and "--icon takes an icon name" in result.stderr
 
 
-def test_note_times_the_fetch_and_the_drawing_but_not_the_wait(tmp_path):
+def test_note_names_the_sitemap_it_read(tmp_path):
     folder = saved_site(tmp_path, acme(blog=5))
-    sitemap.start_run(folder, 3.2)
-    (folder / "run.json").write_text(json.dumps({"fetch_seconds": 3.2, "draw_started": None}))
     run_script("draw", folder, "--type", "mindmap", cwd=tmp_path)
-    run = json.loads((folder / "run.json").read_text())
-    run["draw_started"] -= 40                 # as if the drawing started 40 seconds ago
-    (folder / "run.json").write_text(json.dumps(run))
-    run_script("draw", folder, "--type", "mindmap", cwd=tmp_path)    # a redraw doesn't restart the clock
     out = run_script("note", folder, cwd=tmp_path).stdout.splitlines()
-    assert out == ["Generated in 43 seconds, using [website-sitemap](https://whimsical.com/skills/website-sitemap).",
-                   "[Sitemap of **acme.com**](https://www.acme.com/sitemap.xml), read on 25 Nov 2026 at 09:30.",
+    assert out == ["[Sitemap of **acme.com**](https://www.acme.com/sitemap.xml), read on 25 Nov 2026 at 09:30.",
                    "**9** pages, all drawn."]
 
 
 def test_note_says_how_many_pages_are_drawn(tmp_path):
     folder = saved_site(tmp_path, acme(blog=100))
-    sitemap.start_run(folder, 1)
     run_script("draw", folder, "--type", "mindmap", cwd=tmp_path)
-    assert run_script("note", folder, cwd=tmp_path).stdout.splitlines()[2] == \
+    assert run_script("note", folder, cwd=tmp_path).stdout.splitlines()[1] == \
         "**104** pages, **34** of them drawn."
 
 
@@ -586,10 +577,7 @@ def test_when():
     assert sitemap.when("2026-11-05") == "5 Nov 2026"
 
 
-def test_note_needs_a_fetch_and_a_draw(tmp_path):
-    result = run_script("note", tmp_path, cwd=tmp_path, check=False)
-    assert result.returncode == 1 and "written by `fetch`" in result.stderr
-    sitemap.start_run(tmp_path, 1)
+def test_note_needs_a_draw(tmp_path):
     result = run_script("note", tmp_path, cwd=tmp_path, check=False)
     assert result.returncode == 1 and "run `draw` first" in result.stderr
 

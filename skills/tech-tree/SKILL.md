@@ -28,17 +28,13 @@ and bends as it can. It never calls Whimsical or any other tool; you send its ca
 Run every command from the folder you were started in; the working files go in
 `tech-trees/<name>/` there, where `<name>` is a short name for the source (`acme-launch`).
 
-## Step 1: Start, and read the source
+## Step 1: Read the source
 
-1. Start the run, so the board can say how long it took:
-   ```bash
-   python3 <this skill's folder>/scripts/techtree.py start tech-trees/<name>
-   ```
-2. Work out the source from the request: a list in the message or a file is read as it is; a
+1. Work out the source from the request: a list in the message or a file is read as it is; a
    `whimsical.com` link or a board's name is a Whimsical board; a `linear.app` link, or a Linear
    project, cycle, team or label, is Linear; another tool's name or link is that tool. If it's
    unclear, ask.
-3. Read it: a Whimsical board or Linear as its reference says, anything else with the tools you
+2. Read it: a Whimsical board or Linear as its reference says, anything else with the tools you
    have, into `tree.json` as `references/tree-format.md` describes. If the source is a tool you
    have no tools for (no Linear MCP, say), tell the user in one line that its MCP server or
    connector needs adding, or that they can paste the list, and stop.
@@ -108,13 +104,8 @@ connection doesn't offer `edit`, and say the tree is ready in `tech-trees/<name>
    `image: true` and `crop_ids` set to the arrow's id (from the `edit` reply). If it still
    reads clearly, make it grey again: `edit` with `{"op": "update", "id": <its id>, "color":
    "silver"}`. If it doesn't, leave it red and say so in the report.
-4. Add the footer last, so its time covers the whole run:
-   ```bash
-   python3 <this skill's folder>/scripts/techtree.py footer tech-trees/<name> tech-trees/<name>/plan.json
-   ```
-   It prints one operation; call `edit` with `operations` set to a list holding just it.
-5. Check the board: `fetch` with `image: true`. A big tree makes a small picture, so check that
-   it's all there, the key and footer above the top left, and that a text read (`fetch`,
+4. Check the board: `fetch` with `image: true`. A big tree makes a small picture, so check that
+   it's all there, the key above the top left, and that a text read (`fetch`,
    `select_kinds: ["connector"]`, `limit: 1`) counts as many arrows as the plan has `conn`
    operations. If a call failed or something's missing, `fetch` before trying again: a call can
    partly succeed, and repeating it draws things twice.
