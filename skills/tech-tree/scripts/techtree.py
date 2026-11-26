@@ -60,6 +60,8 @@ def load_tree(path):
             fail(f"task {t} has no title")
         if spec.get("status", "todo") not in ("todo", "doing", "done"):
             fail(f"task {t} has status {spec['status']!r}; use todo, doing or done")
+        if "url" in spec and not str(spec["url"]).startswith("https://"):
+            fail(f"task {t} has url {spec['url']!r}; give its https:// address, or leave it out")
     seen = {}
     for g, spec in groups.items():
         if g in tasks:
@@ -1175,8 +1177,11 @@ class Grid:
                         "width": round(w), "height": round(h)})
         for task, spec in t.tasks.items():
             x, y, w, h = self.card_box(task)
-            ops.append({"op": "add", "type": "task", "temp_id": task, "title": spec["title"],
-                        "color": COLORS[t.state[task]], "x": round(x), "y": round(y + dy), "width": w, "height": h})
+            op = {"op": "add", "type": "task", "temp_id": task, "title": spec["title"],
+                  "color": COLORS[t.state[task]], "x": round(x), "y": round(y + dy), "width": w, "height": h}
+            if spec.get("url"):                           # where the task lives, such as its Linear issue
+                op["description"] = f"[{spec.get('ref') or 'Open the source'}]({spec['url']})"
+            ops.append(op)
         # The critical path last: the board stacks objects in the order they're added. An arrow
         # with no clean route is red, for the agent to look at.
         flagged = set(self.flagged())

@@ -188,3 +188,22 @@ def test_the_tracks_fallback_draws_cleanly_too():
     plan = techtree.layout(FIXTURES / "carbonara.json", "tracks")
     assert plan["strategy"] == "tracks"
     assert plan["flagged"] == [] and plan["through_cards"] == 0 and plan["overlaps"] == 0
+
+
+def test_a_task_with_a_url_links_its_card_to_the_source(tmp_path):
+    path = write_tree(tmp_path, {"a": "todo", "b": "todo"}, [("a", "b")])
+    tree = json.loads(path.read_text())
+    tree["tasks"]["a"].update(url="https://linear.app/acme/issue/ENG-142", ref="ENG-142")
+    path.write_text(json.dumps(tree))
+    cards = {op["temp_id"]: op for op in techtree.layout(path)["ops"] if op.get("type") == "task"}
+    assert cards["a"]["description"] == "[ENG-142](https://linear.app/acme/issue/ENG-142)"
+    assert "description" not in cards["b"]
+
+
+def test_a_url_must_be_an_address(tmp_path):
+    path = write_tree(tmp_path, {"a": "todo"})
+    tree = json.loads(path.read_text())
+    tree["tasks"]["a"]["url"] = "linear.app/acme/issue/ENG-142"
+    path.write_text(json.dumps(tree))
+    with pytest.raises(SystemExit, match="https://"):
+        techtree.load_tree(path)
