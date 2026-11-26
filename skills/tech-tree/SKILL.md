@@ -1,6 +1,6 @@
 ---
 name: tech-tree
-description: Turn any list of tasks into a tech tree on a new Whimsical board, from a Whimsical board of cards, todos or a kanban, a markdown to-do list or a pasted list, Linear issues (a project, a cycle, a team or a label), or another project management tool's tasks. Reads every task, works out which tasks block which (Linear's blocking relations, arrows on the board, or judgement), and draws them as a metro map from left to right, so the order of the work reads at a glance, with what can start now, what's waiting on what, which tasks can run side by side, and the critical path, the longest chain of unfinished tasks. Use when the user asks for a tech tree, dependency graph or dependency map, the order to do a list of tasks in, what blocks what, what can start now, the critical path, or a roadmap drawn from a board of cards, Linear or a to-do list, even if they don't say "skill".
+description: Turn any list of tasks into a tech tree on a new Whimsical board, showing what depends on what, what can start now and the critical path. Reads a Whimsical board of cards or a kanban, a markdown or pasted to-do list, Linear issues (a project, cycle, team or label), or another tool's tasks. Use when the user asks for a tech tree, a dependency graph or map, the order to do tasks in, what blocks what, what can start now, the critical path, or a roadmap from a board, Linear or a to-do list, even if they don't say "skill".
 ---
 
 # Tech Tree

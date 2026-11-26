@@ -1,6 +1,6 @@
 ---
 name: website-sitemap
-description: Draw a website's sitemap on a Whimsical board, as a mind map or a flowchart of section tables, from the site's sitemap.xml files. Reads every nested sitemap, keeps one language, groups pages made from one pattern (directories, dated posts, numbered pages), and draws the site top down so even a site with thousands of pages stays readable on one board. Use when the user asks for a sitemap, site map, site structure, information architecture or page tree of a website or domain, says "map out acme.com", or wants to plan a website rebuild or migration from an existing site, even if they don't say "skill" or "Whimsical".
+description: Draw a website's sitemap on a Whimsical board, as a mind map or a flowchart of section tables, readable even for sites with thousands of pages. Reads the site's sitemap.xml and every sitemap nested in it. Use when the user asks for a sitemap, site map, site structure, information architecture or page tree of a website or domain, says "map out acme.com", or plans a rebuild or migration of an existing site, even if they don't say "skill" or "Whimsical".
 ---
 
 # Website Sitemap
