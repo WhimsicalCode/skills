@@ -2,9 +2,9 @@
 
 # Tech Tree
 
-Turn any list of tasks into a tech tree on a [Whimsical](https://whimsical.com) board: a board
-of cards or a kanban, Linear issues, another tool's tasks, or a markdown to-do list. Each task sits
-one column after what it needs, so the order of the work reads at a glance, with
+Turn a [Whimsical](https://whimsical.com) board of tasks, a kanban, Linear issues, another
+tool's tasks or a markdown to-do list into a tech tree. Each task sits one column after what it
+needs, so the order of the work reads at a glance, with
 what can start now, what's waiting on what, which tasks run side by side, and the critical path.
 
 ```text
