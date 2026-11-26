@@ -79,7 +79,10 @@ anything is wrong. Change `tree.json` and lay it out again until it's right. If 
 ## Step 4: Draw it
 
 The Whimsical MCP tools here are `create_file` (creates a board), `edit` (adds and changes what's
-on a board) and `fetch` (reads a board, as rows or as an image).
+on a board) and `fetch` (reads a board, as rows or as an image). The tree needs `edit`: if your
+tools don't include it, don't draw something else instead (a flowchart loses the layout, the key
+and the trimmed arrows). Stop before creating the board, tell the user their agent's Whimsical
+connection doesn't offer `edit`, and say the tree is ready in `tech-trees/<board>/plan.json`.
 
 1. Create the board: `create_file`, `type: "board"`, titled `<source board title> tech tree`,
    in the same folder or team as the source board if you know it.
@@ -117,6 +120,7 @@ Give the board link, then in a few lines:
 ## Things to watch
 
 - Don't change or tidy the source board, even when its arrows or columns look wrong: say so.
+- Don't send feedback to Whimsical (`send_feedback`) unless the user asks you to.
 - Use only ids that came from Whimsical or from the plan. Never make one up.
 - Never type positions or routes yourself: change `tree.json` and lay it out again.
 - To redraw after changes (a new task, a fixed dependency), update `tree.json`, lay it out again
