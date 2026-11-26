@@ -66,7 +66,10 @@ def run_headless(agent, servers, prompt, run):
         command = [*launch_command(agent, servers), "-p", prompt, "--output-format", "json",
                    "--permission-mode", "acceptEdits", "--allowedTools", allowed]
     else:
-        command = ["codex", "exec", "--full-auto", "--skip-git-repo-check", *codex_config(servers), prompt]
+        # Codex on its own can't ask, so it cancels MCP calls that need approval: approve the skill's servers.
+        approve = [arg for name in servers
+                   for arg in ["-c", f'mcp_servers.{name}.default_tools_approval_mode="approve"']]
+        command = ["codex", "exec", "--full-auto", "--skip-git-repo-check", *codex_config(servers), *approve, prompt]
     print(f"\nRunning {agent} on its own in {run}. This takes a few minutes.", flush=True)
     started = time.monotonic()
     result = subprocess.run(command, cwd=run, capture_output=True, text=True, check=False)
