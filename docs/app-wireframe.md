@@ -17,7 +17,7 @@ you'd move through the app, each rebuilt as a lo-fi iPhone wireframe. Cards, tab
 and list rows are grouped, so you can drag them around and start editing right away.
 Every wireframe links back to its screen on Mobbin.
 
-## Two ways in
+## What it reads from
 
 ### Name an app, with the Mobbin MCP
 
@@ -86,12 +86,6 @@ Mobbin.
 
 The apps belong to their makers. Whimsical isn't affiliated with any of them.
 
-## Status
-
-This is a new project, and most of it was written by coding agents. We've used it at
-Whimsical to [wireframe 20 apps](#examples), but it hasn't been tested much with other agents or
-setups. If something breaks, please [open an issue](https://github.com/WhimsicalCode/skills/issues).
-
 ## Requirements
 
 - An agent that supports skills, remote MCP servers and images, such as
@@ -111,9 +105,8 @@ setups. If something breaks, please [open an issue](https://github.com/Whimsical
 
 ## Install
 
-The skill needs Whimsical's MCP server, `https://mcp.whimsical.com/mcp`, and Mobbin's,
-`https://api.mobbin.com/mcp`, to name an app or use Mobbin links. With only your own
-screenshots, Whimsical's is enough.
+The skill needs two MCP servers: Whimsical, `https://mcp.whimsical.com/mcp`, and Mobbin,
+`https://api.mobbin.com/mcp`. If you only bring your own screenshots, Whimsical is enough.
 
 ### Claude Code
 
@@ -240,6 +233,12 @@ Screens on Mobbin belong to the companies that make those apps. Use them in line
 `wireframes/<Name>/screenshots/` on your machine, credits the app on every board, and
 links each wireframe to its screen on Mobbin. If you're working in a git repository,
 keep `wireframes/` out of it.
+
+## Status
+
+This is a new project, and most of it was written by coding agents. We've used it at
+Whimsical to [wireframe 20 apps](#examples), but it hasn't been tested much with other agents or
+setups. If something breaks, please [open an issue](https://github.com/WhimsicalCode/skills/issues).
 
 ## Privacy
 

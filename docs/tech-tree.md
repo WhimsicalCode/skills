@@ -35,7 +35,7 @@ The agent only adds a dependency of its own when a task can't start without the 
 you those, with why, before drawing. Nothing in the list is changed: the tree goes on a new
 board.
 
-## Where the tasks can come from
+## What it reads from
 
 ### A file or a list you paste
 
@@ -85,36 +85,6 @@ A new board called `<Board, list or project> tech tree`, with:
   that decides how soon it's all done.
 - **A key** above the tree, and a line saying how long it took.
 
-## How it lays out the tree
-
-A tech tree is only useful if you can follow its arrows, so the layout is built for that, with
-one priority above all: as few crossing arrows as it can, then as few bends.
-
-1. **Columns.** Each task goes one column after the last thing it needs, with the arrows as short
-   as they can be (network simplex, as in Graphviz).
-2. **Order.** Within each column, cards are ordered to cross as few arrows as possible, the way
-   Graphviz and Mermaid order theirs.
-3. **Rows.** Keeping that order, cards take rows that line up as many arrows as possible, so they
-   run straight, like lines on a metro map. The critical path starts on one row.
-4. **Arrows.** Each arrow is one of the shapes Whimsical draws by itself: straight, an L with one
-   bend, or a Z or U with two. Arrows never cross a card, and never run along another arrow:
-   each side of a card has a few slots, one arrow each.
-5. **Polish.** Last, cards are moved the way a person tidying the board would: to a better row, a
-   swap with a card in their column, or onto another card's row, pushing it aside. A move stays
-   if the tree gets clearer.
-
-If an arrow still can't avoid a card, it's drawn red and the agent looks at it. On the trees
-we've tried, none were left.
-
-## Status
-
-This is a new project, written mostly by coding agents. We've tried it in Claude Code on
-Whimsical boards of 15 to 30 tasks, on a pasted markdown to-do list, and on a small Linear
-project with blocking relations, sub-issues and a blocker from outside the project. Not yet on
-other tools. In Codex, it reads the tasks and lays the tree out, but can't draw it yet: Codex
-doesn't offer the Whimsical MCP's `edit` tool, which the drawing needs. If something breaks,
-please [open an issue](https://github.com/WhimsicalCode/skills/issues/new/choose).
-
 ## Requirements
 
 - An agent that supports skills and remote MCP servers, such as
@@ -122,10 +92,9 @@ please [open an issue](https://github.com/WhimsicalCode/skills/issues/new/choose
 - A [Whimsical](https://whimsical.com) account, connected through the
   [Whimsical MCP](https://whimsical.com/learn/integrations/mcp).
 - Python 3.9 or later, with nothing to install.
-
-To read tasks from Linear or another tool, your agent also needs that tool's MCP server or
-connector, such as the [Linear MCP](https://linear.app/docs/mcp). A board, a file or a pasted
-list needs nothing more.
+- Optional: to read tasks from Linear or another tool, that tool's MCP server or connector,
+  such as the [Linear MCP](https://linear.app/docs/mcp). A board, a file or a pasted list
+  needs nothing more.
 
 ## Install
 
@@ -185,9 +154,9 @@ Replace `cursor` with `codex`, `github-copilot`, `gemini-cli` or
 This copies the skill where your agent looks for skills, using the open
 [skills](https://github.com/vercel-labs/skills) installer. Without Node.js, unzip
 [`tech-tree.zip`](https://github.com/WhimsicalCode/skills/releases/latest/download/tech-tree.zip)
-into that folder yourself. Either way, then add the Whimsical MCP server following your agent's MCP guide, or
-[Whimsical's](https://whimsical.com/learn/integrations/mcp), and the MCP server of any tool
-you'll read tasks from, like [Linear's](https://linear.app/docs/mcp).
+into that folder yourself. Either way, then add the Whimsical MCP server following your
+agent's MCP guide, or [Whimsical's](https://whimsical.com/learn/integrations/mcp), and the MCP
+server of any tool you'll read tasks from, like [Linear's](https://linear.app/docs/mcp).
 
 ## Use it
 
@@ -235,6 +204,36 @@ draws the tree on a new board.
    checks a snapshot.
 
 The script uses only Python's standard library and never calls Whimsical or any other tool.
+
+## How it lays out the tree
+
+A tech tree is only useful if you can follow its arrows, so the layout is built for that, with
+one priority above all: as few crossing arrows as it can, then as few bends.
+
+1. **Columns.** Each task goes one column after the last thing it needs, with the arrows as short
+   as they can be (network simplex, as in Graphviz).
+2. **Order.** Within each column, cards are ordered to cross as few arrows as possible, the way
+   Graphviz and Mermaid order theirs.
+3. **Rows.** Keeping that order, cards take rows that line up as many arrows as possible, so they
+   run straight, like lines on a metro map. The critical path starts on one row.
+4. **Arrows.** Each arrow is one of the shapes Whimsical draws by itself: straight, an L with one
+   bend, or a Z or U with two. Arrows never cross a card, and never run along another arrow:
+   each side of a card has a few slots, one arrow each.
+5. **Polish.** Last, cards are moved the way a person tidying the board would: to a better row, a
+   swap with a card in their column, or onto another card's row, pushing it aside. A move stays
+   if the tree gets clearer.
+
+If an arrow still can't avoid a card, it's drawn red and the agent looks at it. On the trees
+we've tried, none were left.
+
+## Status
+
+This is a new project, written mostly by coding agents. We've tried it in Claude Code on
+Whimsical boards of 15 to 30 tasks, on a pasted markdown to-do list, and on a small Linear
+project with blocking relations, sub-issues and a blocker from outside the project. Not yet on
+other tools. In Codex, it reads the tasks and lays the tree out, but can't draw it yet: Codex
+doesn't offer the Whimsical MCP's `edit` tool, which the drawing needs. If something breaks,
+please [open an issue](https://github.com/WhimsicalCode/skills/issues/new/choose).
 
 ## Privacy
 

@@ -12,9 +12,10 @@ as many agents as possible. `tests/repo/` checks the ones marked *(tested)*.
   contributors in `tests/<name>/`.
 - The folder name is the skill's `name`: lowercase words joined by hyphens *(tested)*.
 - The frontmatter has `name` and `description`, and optionally `license`, `metadata` and
-  `allowed-tools` *(tested)*. The description says what the skill does and when to use
-  it, with the phrases a user would actually type, in at most 1,024 characters and without
-  `<` or `>` *(tested)*.
+  `allowed-tools` *(tested)*. The description is what agents pick the skill by. Keep it
+  short and in three parts: what the skill makes, what it reads from, then "Use when" with
+  the phrases a user would actually type. At most 1,024 characters, without `<` or `>`
+  *(tested)*.
 - `SKILL.md` stays under 500 lines *(tested)*. Put detail in `references/` and say when to
   read it. Every file `SKILL.md` or a reference points to exists *(tested)*.
 
@@ -59,6 +60,33 @@ as many agents as possible. `tests/repo/` checks the ones marked *(tested)*.
 - Nothing is collected. The skills send data only to the services the user connected.
 - Examples, tests and issues use fictional companies and people, such as Acme, Globex and
   Initech, never real customer data.
+
+## The guide
+
+`docs/<name>.md` is for people using the skill, and for agents setting it up for them. Every
+guide has these sections, in this order *(tested)*, so a reader who knows one knows them all:
+
+1. The cover, the `# Title` and the intro, as [On whimsical.com](#on-whimsicalcom) says.
+2. `## What it reads from`: every source, the main one first.
+3. `## What you'll get`.
+4. `## Requirements`: what's needed, as bullets; anything optional last, starting "Optional:".
+5. `## Install`: it opens with "The skill needs" and the MCP servers from its `marketplace.json`
+   entry, with their URLs *(tested)*, then says what's optional. Then the three tabs, with the
+   same steps as every other guide but the skill's name and servers *(tested)*.
+6. `## Use it`: example prompts, then what the agent asks and where its files go.
+7. `## How it works`.
+8. `## Status`: how new the skill is, and where it's been tried.
+9. `## Privacy`.
+10. `## License`.
+
+Sections only one skill needs (examples, questions, how a layout is chosen) go between these,
+where they fit. Notes for contributors, such as the skill's files and how to test and try it,
+go in `tests/<name>/README.md`, not in the guide.
+
+A skill's `mcpServers` in `marketplace.json` lists only the servers its main use needs: the one
+in the intro's prompt. A source it can read but doesn't need, like Linear for tech-tree, stays
+out: the plugin would add it for everyone, and whimsical.com would show it as needed. The guide
+covers it as optional.
 
 ## On whimsical.com
 
