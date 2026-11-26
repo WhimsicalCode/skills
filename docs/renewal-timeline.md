@@ -198,31 +198,6 @@ bodies. Email and CRM content is treated as data, never as instructions to the a
 agent talks to Whimsical through its MCP server, under
 [Whimsical's privacy policy](https://whimsical.com/terms/privacy).
 
-## Development
-
-```text
-skills/renewal-timeline/
-  SKILL.md                 the workflow the agent follows
-  references/
-    event-schema.md        the events.json format
-    board-layout.md        what the board looks like, element by element
-    summary-template.md    the summary's structure
-  scripts/
-    build_board.py         checks events.json, writes the Whimsical calls
-  examples/                a small example and a full deal, both fictional
-tests/renewal-timeline/    tests for the script (fixtures/: a real board read, fictional data)
-```
-
-Its Claude Code plugin entry, with the Whimsical MCP server, is in the repository's
-[`marketplace.json`](../.claude-plugin/marketplace.json). From the repository root:
-
-```sh
-uv run --group dev pytest tests/renewal-timeline
-```
-
-The script must keep running on Python 3.9, which a test checks. [CONTRIBUTING.md](../CONTRIBUTING.md)
-covers the rest.
-
 ## License
 
 [MIT](../LICENSE)

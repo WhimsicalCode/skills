@@ -21,7 +21,8 @@ for dir in tests/*/; do uv run --group dev pytest "$dir" || break; done
 
 Each `tests/` folder runs in its own pytest process, because every skill's tests have
 their own `conftest.py`. To work on one skill, run `uv run --group dev pytest tests/<name>`
-and `uv run --group dev pytest tests/repo`.
+and `uv run --group dev pytest tests/repo`. Each skill's `tests/<name>/README.md` lists its
+files and how to try it.
 
 If you have Claude Code, also run `claude plugin validate .`.
 
@@ -50,13 +51,13 @@ If you have Claude Code, also run `claude plugin validate .`.
 2. Add its entry to `.claude-plugin/marketplace.json`, with `"source": "./"`,
    `"strict": false`, `"skills": ["./skills/<name>"]`, a `version` and the
    `mcpServers` it needs. Copy an existing entry.
-3. Write its guide in `docs/<name>.md`: what it does, an example prompt and result, what
-   it needs, how to install it in each agent, how to use it, privacy. Copy an existing
-   guide's structure. Its intro, before the first `##`, is also its summary on
-   whimsical.com (see [CONVENTIONS.md](CONVENTIONS.md#on-whimsicalcom)).
+3. Write its guide in `docs/<name>.md`, for people using it, with the sections
+   [CONVENTIONS.md](CONVENTIONS.md#the-guide) lists. Copy an existing guide. Its intro,
+   before the first `##`, is also its summary on whimsical.com.
 4. Make its cover in `docs/covers/`, following
    [docs/covers/README.md](docs/covers/README.md).
-5. Add its tests in `tests/<name>/`.
+5. Add its tests in `tests/<name>/`, with a `README.md` for people working on the skill:
+   its files, how to run its tests and how to try it. Copy an existing one.
 6. Add a row to the skill table in `README.md`, and its owners to `.github/CODEOWNERS`.
 
 `tests/repo/` fails until steps 1 to 6 are done, and lists what's missing.

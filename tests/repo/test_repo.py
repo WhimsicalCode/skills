@@ -101,6 +101,8 @@ def test_marketplace_lists_only_skills_that_exist():
 def test_has_guide_tests_and_gallery_row(skill):
     assert (ROOT / "docs" / f"{skill.name}.md").is_file(), f"add docs/{skill.name}.md"
     assert any((ROOT / "tests" / skill.name).glob("test_*.py")), f"add tests in tests/{skill.name}/"
+    assert (ROOT / "tests" / skill.name / "README.md").is_file(), \
+        f"add tests/{skill.name}/README.md, for people working on the skill"
     assert f"(docs/{skill.name}.md)" in (ROOT / "README.md").read_text(), "add a row to the README's skill table"
 
 

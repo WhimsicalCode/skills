@@ -8,7 +8,8 @@ as many agents as possible. `tests/repo/` checks the ones marked *(tested)*.
 - A skill is a standard [Agent Skills](https://agentskills.io) folder in `skills/<name>/`:
   `SKILL.md`, plus `references/`, `scripts/`, `examples/` or `assets/` as needed. Nothing
   else goes in it, since the whole folder is what users install and what the release zip
-  holds. The guide for people goes in `docs/<name>.md`, the tests in `tests/<name>/`.
+  holds. The guide for people goes in `docs/<name>.md`, the tests and a `README.md` for
+  contributors in `tests/<name>/`.
 - The folder name is the skill's `name`: lowercase words joined by hyphens *(tested)*.
 - The frontmatter has `name` and `description`, and optionally `license`, `metadata` and
   `allowed-tools` *(tested)*. The description says what the skill does and when to use

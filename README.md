@@ -74,7 +74,7 @@ following your agent's MCP setup guide.
 skills/<name>/                    each skill: SKILL.md, references/, scripts/
 docs/<name>.md                    each skill's guide: what it does, install, use, privacy
 docs/covers/                      each skill's cover for whimsical.com, and how to make one
-tests/<name>/                     each skill's tests, outside the skill so they stay out of its zip
+tests/<name>/                     each skill's tests and notes for contributors, outside its zip
 tests/repo/                       checks every skill against the conventions
 .claude-plugin/marketplace.json   the Claude Code catalog: each skill's version and MCP servers
 .github/workflows/                tests on every change; a release zip of every skill per tag

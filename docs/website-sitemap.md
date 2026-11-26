@@ -202,26 +202,6 @@ and the sitemap files on them, and identifies itself as `WhimsicalSitemapSkill`.
 open the pages themselves. Your agent talks to Whimsical through its MCP server, under
 [Whimsical's privacy policy](https://whimsical.com/terms/privacy).
 
-## Development
-
-```text
-skills/website-sitemap/
-  SKILL.md              the workflow the agent follows
-  scripts/
-    sitemap.py          reads sitemaps, builds the tree, chooses what fits, writes the diagram text
-tests/website-sitemap/  tests for the script, offline, with fictional sites
-```
-
-Its Claude Code plugin entry, with the Whimsical MCP server, is in the repository's
-[`marketplace.json`](../.claude-plugin/marketplace.json). From the repository root:
-
-```sh
-uv run --group dev pytest tests/website-sitemap
-```
-
-The script must keep running on Python 3.9, which a test checks. [CONTRIBUTING.md](../CONTRIBUTING.md)
-covers the rest.
-
 ## License
 
 [MIT](../LICENSE)
