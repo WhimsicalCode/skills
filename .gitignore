@@ -1,6 +1,7 @@
 # Run folders hold screenshots and customer data: keep them out of version control.
 wireframes/
 renewals/
+tech-trees/
 dist/
 .venv/
 __pycache__/
