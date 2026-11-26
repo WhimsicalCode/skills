@@ -82,10 +82,11 @@ other, and shows you those, with why, before drawing.
 
 ## Status
 
-This is a new project, written mostly by coding agents. We've tried it on Whimsical boards of 15
-to 30 tasks, in Claude Code. The Linear source is new and hasn't been tried on a real Linear
-workspace yet. In Codex, it reads the source and lays the tree out, but can't draw it yet: Codex
-doesn't offer the Whimsical MCP's `edit` tool, which the drawing needs. If something breaks,
+This is a new project, written mostly by coding agents. We've tried it in Claude Code on
+Whimsical boards of 15 to 30 tasks and on a small Linear project, with blocking relations,
+sub-issues and a blocker from outside the project. In Codex, it reads the source and lays the tree
+out, but can't draw it yet: Codex doesn't offer the Whimsical MCP's `edit` tool, which the drawing
+needs. If something breaks,
 please [open an issue](https://github.com/WhimsicalCode/skills/issues/new/choose).
 
 ## Requirements
