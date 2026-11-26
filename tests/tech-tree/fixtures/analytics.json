@@ -1,0 +1,297 @@
+{
+ "tasks": {
+  "wh": {
+   "title": "Pick a data warehouse",
+   "status": "todo"
+  },
+  "ing": {
+   "title": "Choose an ingestion tool",
+   "status": "todo"
+  },
+  "bi": {
+   "title": "Pick BI tool",
+   "status": "todo"
+  },
+  "metrics": {
+   "title": "Define core metrics with stakeholders (MRR, active users, churn)",
+   "status": "todo"
+  },
+  "replica": {
+   "title": "Create a read replica of the production Postgres",
+   "status": "todo"
+  },
+  "setup": {
+   "title": "Set up the warehouse account, dev and prod",
+   "status": "todo"
+  },
+  "roles": {
+   "title": "Define access roles and a PII policy",
+   "status": "todo"
+  },
+  "repl": {
+   "title": "Replicate Postgres tables into the warehouse",
+   "status": "todo"
+  },
+  "stripe": {
+   "title": "Ingest Stripe billing data",
+   "status": "todo"
+  },
+  "plan": {
+   "title": "Write the event tracking plan",
+   "status": "todo"
+  },
+  "instr": {
+   "title": "Instrument the app with tracking events",
+   "status": "todo"
+  },
+  "events": {
+   "title": "Ingest product events",
+   "status": "todo"
+  },
+  "mask": {
+   "title": "Mask PII in the warehouse",
+   "status": "todo"
+  },
+  "dbt": {
+   "title": "Set up a dbt project and repo",
+   "status": "todo"
+  },
+  "ci": {
+   "title": "Run dbt in CI on every pull request",
+   "status": "todo"
+  },
+  "sched": {
+   "title": "Schedule ingestion and dbt runs",
+   "status": "todo"
+  },
+  "staging": {
+   "title": "Build staging models",
+   "status": "todo"
+  },
+  "core": {
+   "title": "Build core models: customers, subscriptions, revenue",
+   "status": "todo"
+  },
+  "usage": {
+   "title": "Build product usage models",
+   "status": "todo"
+  },
+  "dq": {
+   "title": "Add data quality tests and freshness alerts",
+   "status": "todo"
+  },
+  "mlayer": {
+   "title": "Build the metrics layer",
+   "status": "todo"
+  },
+  "connect": {
+   "title": "Connect the BI tool to the warehouse",
+   "status": "todo"
+  },
+  "kpi": {
+   "title": "Build the company KPI dashboard",
+   "status": "todo"
+  },
+  "usagedash": {
+   "title": "Build the product usage dashboard",
+   "status": "todo"
+  },
+  "dict": {
+   "title": "Write the data dictionary",
+   "status": "todo"
+  },
+  "train": {
+   "title": "Train teams on self-serve analytics",
+   "status": "todo"
+  }
+ },
+ "groups": {
+  "choose": {
+   "label": "Choose the stack",
+   "tasks": [
+    "wh",
+    "ing"
+   ]
+  },
+  "load": {
+   "label": "Load the data",
+   "tasks": [
+    "repl",
+    "stripe",
+    "events"
+   ]
+  },
+  "dbtops": {
+   "label": "Run dbt reliably",
+   "tasks": [
+    "ci",
+    "sched"
+   ]
+  },
+  "dashboards": {
+   "label": "Dashboards",
+   "tasks": [
+    "kpi",
+    "usagedash"
+   ]
+  }
+ },
+ "edges": [
+  [
+   "wh",
+   "setup"
+  ],
+  [
+   "setup",
+   "roles"
+  ],
+  [
+   "replica",
+   "repl"
+  ],
+  [
+   "setup",
+   "repl"
+  ],
+  [
+   "ing",
+   "repl"
+  ],
+  [
+   "setup",
+   "stripe"
+  ],
+  [
+   "ing",
+   "stripe"
+  ],
+  [
+   "metrics",
+   "plan"
+  ],
+  [
+   "plan",
+   "instr"
+  ],
+  [
+   "instr",
+   "events"
+  ],
+  [
+   "setup",
+   "events"
+  ],
+  [
+   "ing",
+   "events"
+  ],
+  [
+   "roles",
+   "mask"
+  ],
+  [
+   "repl",
+   "mask"
+  ],
+  [
+   "setup",
+   "dbt"
+  ],
+  [
+   "dbt",
+   "ci"
+  ],
+  [
+   "dbt",
+   "sched"
+  ],
+  [
+   "dbt",
+   "staging"
+  ],
+  [
+   "repl",
+   "staging"
+  ],
+  [
+   "stripe",
+   "staging"
+  ],
+  [
+   "staging",
+   "core"
+  ],
+  [
+   "metrics",
+   "core"
+  ],
+  [
+   "staging",
+   "usage"
+  ],
+  [
+   "events",
+   "usage"
+  ],
+  [
+   "core",
+   "mlayer"
+  ],
+  [
+   "staging",
+   "dq"
+  ],
+  [
+   "sched",
+   "dq"
+  ],
+  [
+   "bi",
+   "connect"
+  ],
+  [
+   "mask",
+   "connect"
+  ],
+  [
+   "roles",
+   "connect"
+  ],
+  [
+   "setup",
+   "connect"
+  ],
+  [
+   "mlayer",
+   "kpi"
+  ],
+  [
+   "connect",
+   "kpi"
+  ],
+  [
+   "usage",
+   "usagedash"
+  ],
+  [
+   "connect",
+   "usagedash"
+  ],
+  [
+   "core",
+   "dict"
+  ],
+  [
+   "kpi",
+   "train"
+  ],
+  [
+   "usagedash",
+   "train"
+  ],
+  [
+   "dict",
+   "train"
+  ]
+ ]
+}

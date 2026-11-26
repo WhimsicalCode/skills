@@ -1,0 +1,83 @@
+<svg viewBox="0 0 720 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Input: a kanban board, three columns of cards, the done ones grey. -->
+  <rect x="56" y="110" width="236" height="300" rx="14" fill="#f6f4f8" stroke="#e1dce5" stroke-width="2"/>
+  <g fill="#f0eef2">
+    <rect x="70" y="146" width="64" height="250" rx="8"/>
+    <rect x="142" y="146" width="64" height="250" rx="8"/>
+    <rect x="214" y="146" width="64" height="250" rx="8"/>
+  </g>
+  <g fill="#d6d0db">
+    <rect x="70" y="126" width="40" height="8" rx="4"/>
+    <rect x="142" y="126" width="44" height="8" rx="4"/>
+    <rect x="214" y="126" width="34" height="8" rx="4"/>
+  </g>
+  <g fill="#dcd8ff" stroke="#b8b0ff" stroke-width="2">
+    <rect x="78" y="156" width="48" height="32" rx="8"/>
+    <rect x="78" y="198" width="48" height="32" rx="8"/>
+    <rect x="78" y="240" width="48" height="32" rx="8"/>
+    <rect x="78" y="282" width="48" height="32" rx="8"/>
+    <rect x="150" y="156" width="48" height="32" rx="8"/>
+    <rect x="150" y="198" width="48" height="32" rx="8"/>
+  </g>
+  <g fill="#958bff">
+    <rect x="86" y="168" width="30" height="8" rx="4"/>
+    <rect x="86" y="210" width="24" height="8" rx="4"/>
+    <rect x="86" y="252" width="32" height="8" rx="4"/>
+    <rect x="86" y="294" width="26" height="8" rx="4"/>
+    <rect x="158" y="168" width="28" height="8" rx="4"/>
+    <rect x="158" y="210" width="32" height="8" rx="4"/>
+  </g>
+  <g fill="#e1dce5" stroke="#d6d0db" stroke-width="2">
+    <rect x="222" y="156" width="48" height="32" rx="8"/>
+    <rect x="222" y="198" width="48" height="32" rx="8"/>
+  </g>
+  <g fill="#d6d0db">
+    <rect x="230" y="168" width="30" height="8" rx="4"/>
+    <rect x="230" y="210" width="24" height="8" rx="4"/>
+  </g>
+
+  <!-- The arrow, as on the site's other cards. -->
+  <path d="M322 260H392" stroke="#b8b0bc" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M392 254L401 260L392 266Z" fill="#b8b0bc"/>
+
+  <!-- Output: a tech tree. The critical path runs straight through the middle; the other
+       tasks feed it with one elbow each, two of them side by side in a dashed group. -->
+  <rect x="478" y="302" width="60" height="92" rx="10" fill="#f6f4f8" stroke="#c9c1cd" stroke-width="2" stroke-dasharray="5 4"/>
+  <g stroke="#cf8bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M460 182H486"/>
+    <path d="M530 182H578V246"/>
+    <path d="M460 348H478"/>
+    <path d="M538 348H648V274"/>
+  </g>
+  <g stroke="#9e39e5" stroke-width="2.5" stroke-linecap="round">
+    <path d="M460 260H486"/>
+    <path d="M530 260H556"/>
+    <path d="M600 260H626"/>
+  </g>
+  <g fill="#efd9ff" stroke="#cf8bff" stroke-width="2">
+    <rect x="416" y="168" width="44" height="28" rx="8"/>
+    <rect x="486" y="168" width="44" height="28" rx="8"/>
+    <rect x="416" y="334" width="44" height="28" rx="8"/>
+    <rect x="486" y="312" width="44" height="28" rx="8"/>
+    <rect x="486" y="356" width="44" height="28" rx="8"/>
+  </g>
+  <g fill="#cf8bff">
+    <rect x="424" y="178" width="26" height="8" rx="4"/>
+    <rect x="494" y="178" width="22" height="8" rx="4"/>
+    <rect x="424" y="344" width="24" height="8" rx="4"/>
+    <rect x="494" y="322" width="26" height="8" rx="4"/>
+    <rect x="494" y="366" width="20" height="8" rx="4"/>
+  </g>
+  <g fill="#9e39e5" stroke="#731bb2" stroke-width="2">
+    <rect x="416" y="246" width="44" height="28" rx="8"/>
+    <rect x="486" y="246" width="44" height="28" rx="8"/>
+    <rect x="556" y="246" width="44" height="28" rx="8"/>
+    <rect x="626" y="246" width="44" height="28" rx="8"/>
+  </g>
+  <g fill="#fbfafc">
+    <rect x="424" y="256" width="26" height="8" rx="4"/>
+    <rect x="494" y="256" width="22" height="8" rx="4"/>
+    <rect x="564" y="256" width="28" height="8" rx="4"/>
+    <rect x="634" y="256" width="24" height="8" rx="4"/>
+  </g>
+</svg>
