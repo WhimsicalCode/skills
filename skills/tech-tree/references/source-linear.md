@@ -1,9 +1,18 @@
 # Reading Linear issues
 
-Linear is read through its MCP server (`https://mcp.linear.app/mcp`). Its tools list issues (by
-team, project, cycle, label or a search) and read one issue with its details; their exact names
-change, so pick them by what they do. If no Linear tools are connected, say so in one line (the
-user can add the Linear MCP server and sign in) and stop.
+Linear is read through its MCP server (`https://mcp.linear.app/mcp`; in Claude it may be the
+claude.ai Linear connector). Two of its tools do the work:
+
+- **`list_issues`** lists issues by `team`, `project`, `cycle`, `label`, `state` or `parentId`,
+  up to `limit: 250` a page; follow its `cursor` until there are no more. It gives each issue's
+  title, status and `parentId` (ask for them in `fields` if they're missing), but **not its
+  relations**.
+- **`get_issue`**, with `includeRelations: true`, gives one issue's blocking, related and
+  duplicate relations. Call it for every issue in the set: that's where the dependencies are.
+
+`list_projects`, `list_cycles` and `list_teams` find what the user names. Tool names can change
+between versions; pick them by what they do. If no Linear tools are connected, say so in one line
+(the user can add the Linear MCP server or connector and sign in) and stop.
 
 ## Which issues
 
@@ -40,14 +49,15 @@ Linear issues have relations, and those are the dependencies:
   project, another team) still holds the work up. Add it as a task like the others, and list
   these in your report.
 
-Read each issue's relations with the tool that reads one issue. If the tools don't return
-relations at all, say so before going further: the tree would then rest on your judgement
-(`dependencies.md`), and the user should know. Infer dependencies only then, or when the user
-asks; the relations people set are worth more than a guess.
+Read each issue's relations with `get_issue` and `includeRelations: true`, not from the list. If
+the tools don't return relations at all, say so before going further: the tree would then rest on
+your judgement (`dependencies.md`), and the user should know. Infer dependencies only then, or
+when the user asks; the relations people set are worth more than a guess.
 
 ## Groups
 
-- **Sub-issues of one parent**, 2 to 5 of them, that don't block each other, make a group,
+- **Sub-issues of one parent** (issues with the same `parentId`), 2 to 5 of them, that don't
+  block each other, make a group,
   labelled with the parent's title. If the parent issue is in the set too, it needs its
   sub-issues: an edge from the group to the parent. If the parent is only a container for them
   (no work of its own), leave it out and say so.
