@@ -81,8 +81,8 @@
     },
     {
       "name": "tech-tree",
-      "version": "0.1.0",
-      "description": "Turn a Whimsical board of tasks, a kanban, Linear issues or a markdown to-do list into a tech tree: which task needs which, what can start now, and the critical path, drawn left to right like a metro map with as few crossing arrows as it can.",
+      "version": "0.1.1",
+      "description": "Turn any list of tasks into a tech tree in Whimsical, from a board or a kanban, a markdown to-do list, Linear issues or another tool: which task needs which, what can start now, and the critical path, drawn left to right like a metro map with as few crossing arrows as it can.",
       "source": "./",
       "strict": false,
       "skills": ["./skills/tech-tree"],
@@ -90,10 +90,6 @@
         "whimsical": {
           "type": "http",
           "url": "https://mcp.whimsical.com/mcp"
-        },
-        "linear": {
-          "type": "http",
-          "url": "https://mcp.linear.app/mcp"
         }
       },
       "author": {
