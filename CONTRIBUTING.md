@@ -42,6 +42,20 @@ If you have Claude Code, also run `claude plugin validate .`.
   published version instead, name the skill `WhimsicalCode/skills/<name>`. With
   `--prompt "<what a user would ask>"`, the agent runs on its own and the script reports
   its answer, how long it took and anything it wasn't allowed to do.
+
+  Those runs reuse your sign-ins, so they don't show what a new user goes through. Before a
+  release, and whenever you change a guide's install steps, try it as a new user would:
+
+  ```sh
+  uv run dev/try.py --save-token                         # once: a Claude Code token, kept in the Keychain
+  uv run dev/try.py <name> --fresh --prompt "<what a user would ask>"
+  ```
+
+  It starts Claude Code with a blank configuration (no MCP servers, connectors or sign-ins), runs
+  the commands under the guide's `## Install` > `### Claude Code` as they're written, and opens
+  the browser to sign in to each MCP server: click Authorize. Then it runs the request, and
+  deletes the blank configuration and its sign-ins. Without `--prompt`, it starts Claude Code
+  there for you to try, and cleans up when you quit. Claude Code only, for now.
 - Say in the pull request which agents and models you tried it with.
 
 ## Adding a skill
