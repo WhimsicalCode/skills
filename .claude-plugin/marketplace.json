@@ -82,7 +82,7 @@
     {
       "name": "tech-tree",
       "version": "0.1.1",
-      "description": "Turn any list of tasks into a tech tree in Whimsical, from a board or a kanban, a markdown to-do list, Linear issues or another tool: which task needs which, what can start now, and the critical path, drawn left to right like a metro map with as few crossing arrows as it can.",
+      "description": "Turn any list of tasks into a tech tree in Whimsical. Start from a Whimsical board, a kanban, a markdown or text to-do list, Linear issues or another tool. See what depends on what, what you can start now, and the critical path.",
       "source": "./",
       "strict": false,
       "skills": ["./skills/tech-tree"],
