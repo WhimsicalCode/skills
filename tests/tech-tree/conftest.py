@@ -32,4 +32,4 @@ def write_tree(folder, tasks, edges=(), groups=None):
 def plans():
     """Each fixture tree laid out once for the whole session: it takes a few seconds."""
     import techtree
-    return {name: techtree.layout(FIXTURES / f"{name}.json") for name in ("carbonara", "analytics")}
+    return {name: techtree.layout(FIXTURES / f"{name}.json") for name in ("carbonara", "analytics", "offsite")}

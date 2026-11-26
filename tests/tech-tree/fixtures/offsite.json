@@ -1,0 +1,202 @@
+{
+ "tasks": {
+  "goals": {
+   "title": "Agree on the offsite goals with leadership",
+   "status": "done"
+  },
+  "budget": {
+   "title": "Set the budget",
+   "status": "done"
+  },
+  "shortlist": {
+   "title": "Shortlist three venues",
+   "status": "doing"
+  },
+  "dates": {
+   "title": "Pick the dates",
+   "status": "doing"
+  },
+  "survey": {
+   "title": "Survey the team on dietary needs and accessibility",
+   "status": "todo"
+  },
+  "agenda": {
+   "title": "Draft the agenda",
+   "status": "todo"
+  },
+  "venue": {
+   "title": "Book the venue",
+   "status": "todo"
+  },
+  "savedate": {
+   "title": "Send the save-the-date",
+   "status": "todo"
+  },
+  "flights": {
+   "title": "Book flights and trains",
+   "status": "todo"
+  },
+  "hotel": {
+   "title": "Book hotel rooms",
+   "status": "todo"
+  },
+  "shuttles": {
+   "title": "Arrange airport shuttles",
+   "status": "todo"
+  },
+  "caterer": {
+   "title": "Book the caterer",
+   "status": "todo"
+  },
+  "dinner": {
+   "title": "Plan the team dinner",
+   "status": "todo"
+  },
+  "facilitator": {
+   "title": "Hire a facilitator for the strategy day",
+   "status": "todo"
+  },
+  "workshop": {
+   "title": "Prepare the strategy workshop",
+   "status": "todo"
+  },
+  "swag": {
+   "title": "Order team swag",
+   "status": "todo"
+  },
+  "activity": {
+   "title": "Plan a team activity",
+   "status": "todo"
+  },
+  "pack": {
+   "title": "Send the final agenda and travel pack",
+   "status": "todo"
+  },
+  "av": {
+   "title": "Set up the A/V and room layout",
+   "status": "todo"
+  },
+  "photo": {
+   "title": "Book a photographer",
+   "status": "todo"
+  },
+  "feedback": {
+   "title": "Collect feedback after the offsite",
+   "status": "todo"
+  }
+ },
+ "groups": {
+  "travel": {
+   "label": "Travel bookings",
+   "tasks": [
+    "flights",
+    "hotel"
+   ]
+  },
+  "social": {
+   "label": "Social events",
+   "tasks": [
+    "dinner",
+    "activity"
+   ]
+  }
+ },
+ "edges": [
+  [
+   "budget",
+   "venue"
+  ],
+  [
+   "dates",
+   "savedate"
+  ],
+  [
+   "shortlist",
+   "venue"
+  ],
+  [
+   "dates",
+   "venue"
+  ],
+  [
+   "goals",
+   "agenda"
+  ],
+  [
+   "venue",
+   "travel"
+  ],
+  [
+   "flights",
+   "shuttles"
+  ],
+  [
+   "venue",
+   "caterer"
+  ],
+  [
+   "survey",
+   "caterer"
+  ],
+  [
+   "venue",
+   "social"
+  ],
+  [
+   "survey",
+   "dinner"
+  ],
+  [
+   "dates",
+   "facilitator"
+  ],
+  [
+   "facilitator",
+   "workshop"
+  ],
+  [
+   "agenda",
+   "workshop"
+  ],
+  [
+   "budget",
+   "swag"
+  ],
+  [
+   "venue",
+   "photo"
+  ],
+  [
+   "agenda",
+   "pack"
+  ],
+  [
+   "hotel",
+   "pack"
+  ],
+  [
+   "shuttles",
+   "pack"
+  ],
+  [
+   "social",
+   "pack"
+  ],
+  [
+   "venue",
+   "av"
+  ],
+  [
+   "workshop",
+   "av"
+  ],
+  [
+   "pack",
+   "feedback"
+  ],
+  [
+   "av",
+   "feedback"
+  ]
+ ]
+}

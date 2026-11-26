@@ -107,10 +107,10 @@ def test_routes_are_shapes_whimsical_draws(tmp_path):
                 assert x1 == x2 or y1 == y2, "every piece runs across or down"
 
 
-# ---------------------------------------------------------------- the two trees it was built on
+# ---------------------------------------------------------------- example trees
 
 
-@pytest.mark.parametrize("name,hops,elbows", [("carbonara", 0, 7), ("analytics", 5, 20)])
+@pytest.mark.parametrize("name,hops,elbows", [("carbonara", 0, 7), ("analytics", 5, 20), ("offsite", 5, 20)])
 def test_fixture_trees_stay_at_least_this_clean(plans, name, hops, elbows):
     plan = plans[name]
     assert plan["flagged"] == []
@@ -120,7 +120,7 @@ def test_fixture_trees_stay_at_least_this_clean(plans, name, hops, elbows):
     assert plan["elbows"] <= elbows
 
 
-@pytest.mark.parametrize("name", ["carbonara", "analytics"])
+@pytest.mark.parametrize("name", ["carbonara", "analytics", "offsite"])
 def test_the_plan_draws_every_card_once_and_every_arrow(plans, name):
     tree = json.loads((FIXTURES / f"{name}.json").read_text())
     plan = plans[name]
@@ -137,7 +137,7 @@ def test_the_plan_draws_every_card_once_and_every_arrow(plans, name):
             assert apart, f"cards overlap: {a} {b}"
 
 
-@pytest.mark.parametrize("name", ["carbonara", "analytics"])
+@pytest.mark.parametrize("name", ["carbonara", "analytics", "offsite"])
 def test_the_critical_path_is_orange_and_drawn_last(plans, name):
     arrows = [op for op in plans[name]["ops"] if op.get("type") == "conn" and "from_id" in op]
     orange = [i for i, op in enumerate(arrows) if op.get("color") == "orange"]
